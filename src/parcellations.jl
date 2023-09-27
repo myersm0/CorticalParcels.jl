@@ -60,7 +60,7 @@ Convert a Parcellation from its internal Dict-based representation into a Vector
 Warning: this is not a sensible representation in the event that any Parcels overlap.
 """
 function Base.vec(px::Parcellation{T}) where T
-	out = zeros(T, px.nverts)
+	out = zeros(T, length(px))
 	for k in keys(px)
 		out[vertices(px[k])] .= k
 	end

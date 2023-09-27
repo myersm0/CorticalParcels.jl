@@ -1,6 +1,33 @@
 using CorticalParcels
+using CorticalSurfaces
+using JLD
 using Test
+using Chain
+using CIFTI
+
+data_dir = joinpath(dirname(@__FILE__), "..", "data")
+
+mw_file = joinpath(data_dir, "mw_verts.jld")
+medial_wall = falses(32492)
+temp = load(mw_file, "mw_verts")
+medial_wall[filter(x -> x <= 32492, temp)] .= true
+hem = Hemisphere(medial_wall)
+
+parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
+cifti_data = CIFTI.load(parcel_file)
+
+types_to_test = [UInt16, Int32, Int64]
 
 @testset "CorticalParcels.jl" begin
-    # Write your tests here.
+	for dtype in types_to_test
+		px = Parcellation{dtype}(hem, cifti_data[L])
+		@test size(px) == length(setdiff(cifti_data[L], 0))
+		@test length(px) == 32492
+		@test all(trim(vec(px), hem) .== cifti_data[L])
+		parcel_sizes = [size(px[p]) for p in keys(px)]
+		@test sum(parcel_sizes) == sum(cifti_data[L] .!= 0)
+		parcel_vertices = [vertices(px[p]) for p in keys(px)]
+		@test all(length.(parcel_vertices) == parcel_sizes)
+	end
 end
+
