@@ -56,10 +56,11 @@ Base.values(px::Parcellation) = values(px.parcels)
 Base.getindex(px::Parcellation{T}, k::T) where T = px.parcels[k]
 
 """
-Convert a Parcellation from its internal Dict-based representation into a Vector{T}.
+Convert a Parcellation from its internal Dict-based representation into a `Vector{T}`.
+`T` must have a zeros(T, ...) method.
 Warning: this is not a sensible representation in the event that any Parcels overlap.
 """
-function Base.vec(px::Parcellation{T}) where T
+function Base.vec(px::Parcellation{T}) where T <: Real
 	out = zeros(T, length(px))
 	for k in keys(px)
 		out[vertices(px[k])] .= k

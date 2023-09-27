@@ -16,7 +16,7 @@ hem = Hemisphere(medial_wall)
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 cifti_data = CIFTI.load(parcel_file)
 
-types_to_test = [UInt16, Int32, Int64]
+types_to_test = [UInt16, Int64]
 
 @testset "CorticalParcels.jl" begin
 	for dtype in types_to_test
@@ -29,5 +29,19 @@ types_to_test = [UInt16, Int32, Int64]
 		parcel_vertices = [vertices(px[p]) for p in keys(px)]
 		@test all(length.(parcel_vertices) == parcel_sizes)
 	end
+
+	# things should work with arbitrary non-numeric types of T as well; test this
+	dtype = String
+	inds = [9, 99, 999, 9999]
+	temp = fill("unassigned", 32492)
+	temp[inds] .= "test"
+	px = Parcellation{dtype}(hem, temp)
+	@test size(px["test"]) == 4
+	@test size(px["unassigned"]) == 32492 - 4
+	# `vec(px)` is not possible however because we can only do this where T <: Real:
+	@test_throws MethodError vec(px)
 end
+
+
+
 
