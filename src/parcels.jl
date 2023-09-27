@@ -53,7 +53,6 @@ Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 Base.setindex(p::Parcel, args...) = setindex(p.membership, args...)
 
 function Base.show(io::IO, ::MIME"text/plain", p::Parcel)
-	println("Parcel with $(size(p)) vertices")
-	display(vertices(p))
+	print(io, "Parcel with $(size(p)) vertices")
 end
 

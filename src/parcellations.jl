@@ -69,8 +69,9 @@ function Base.vec(px::Parcellation{T}) where T <: Real
 end
 
 function Base.show(io::IO, ::MIME"text/plain", px::Parcellation)
-	println("Parcellation with $(size(px)) parcels, in a space of $(size(px.surface)) vertices")
-	display(px.parcels)
+	print(io, "Parcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
+	print(io, " in a space of $(size(px.surface)) vertices")
+	print(io, " ($(size(px.surface, Exclusive())) without medial wall)")
 end
 
 
