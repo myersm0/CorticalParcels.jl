@@ -8,6 +8,8 @@ A `Parcellation` is a collection of `Parcel`s that all share the same space. It'
   - (if however the geometry is not of interest in your application, then a dummy surface can be created by, for example, `Hemisphere(32492)` where the only piece of information that's strictly required is the number of vertices, 32492 in this case)
 - a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type that you want to use as keys for accessing and labeling individual parcels
 
+A `Parcellation` can be mapped to a vanilla `Vector{T}` representation if desired via `vec(px::Parcellation)`.
+
 ## Installation
 Within Julia:
 ```
