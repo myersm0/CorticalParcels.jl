@@ -6,17 +6,28 @@ struct Parcel
 	membership::SparseVector{Bool, Int}
 end
 
-"Create an empty Parcel in a representational space of `n` vertices"
+"""
+    Parcel(n::Int)
+
+Create an empty `Parcel` within a representational space of `n` vertices
+"""
 function Parcel(n::Int)
 	return Parcel(spzeros(Bool, n))
 end
 
-"Create an empty Parcel where `surface` dictates the length of the representation"
-function Parcel(x::SurfaceSpace, args...)
-	return Parcel(size(x, args...))
+"""
+    Parcel(surface::SurfaceSpace, args...)
+Create an empty `Parcel` where `surface` dictates the length of the representational space
+"""
+function Parcel(surface::SurfaceSpace, args...)
+	return Parcel(size(surface, args...))
 end
 
-"Make a Parcel, given its vertex indices and a representational space of length `n`"
+"""
+    Parcel(verts::Vector{Int}; n::Int)
+
+Make a `Parcel`, given its vertex indices and a representational space of length `n`
+"""
 function Parcel(verts::Vector{Int}; n::Int)
 	temp = spzeros(Bool, n)
 	temp[verts] .= true
@@ -24,9 +35,11 @@ function Parcel(verts::Vector{Int}; n::Int)
 end
 
 """
-Given a Matrix of arbitrary x, y, z coordinates and a KDTree representing defined 
-cortical indices, make a Parcel by mapping those coordinates to defined indices
-via nearest neighbor search
+    Parcel(coords::Matrix, tree::KDTree)
+
+Given a Matrix of arbitrary x, y, z coordinates and a KDTree representing the 
+positions of defined cortical vertex indices, make a Parcel by mapping those 
+coordinates to the set of defined indices via nearest neighbor search
 """
 function Parcel(coords::Matrix, tree::KDTree)
 	inds, dists = knn(tree, coords, 1)
@@ -36,13 +49,25 @@ function Parcel(coords::Matrix, tree::KDTree)
 	return Parcel(inds; nverts = nverts)
 end
 
-"Get the vertex indices belonging to a Parcel"
+"""
+    vertices(p::Parcel)
+
+Get the vertex indices belonging to a Parcel
+"""
 vertices(p::Parcel) = p.membership.nzind
 
-"Get the size (number of vertices) of a Parcel"
+"""
+    size(p::Parcel)
+
+Get the size (number of vertices) of a Parcel"
+"""
 Base.size(p::Parcel) = length(p.membership.nzval)
 
-"Get the length of the representational space in which a Parcel is located"
+"""
+    length(p::Parcel)
+
+Get the length of the representational space in which a Parcel is located"
+"""
 Base.length(p::Parcel) = p.membership.n
 
 Base.intersect(p1::Parcel, p2::Parcel) = p1.membership .& p2.membership

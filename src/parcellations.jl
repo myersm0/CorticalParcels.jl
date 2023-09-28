@@ -7,10 +7,12 @@ struct Parcellation{T}
 end
 
 """
-Create a Parcellation from a Vector, the length of which should match the size
-of the surface space being supplied. The distinct elements of that Vector will 
-become the Parcels of the resulting Parcellation struct. Parcels will be keyed 
-by IDs of type `T`; therefore the eltype of the Vector you supply must be
+    Parcellation{T}(surface::SurfaceSpace, x::AbstractVector)
+
+Create a `Parcellation` from a `Vector` `x`, the length of which should match the size
+of the surface space being supplied. The distinct elements of that `Vector` will 
+become the `Parcels` of the resulting `Parcellation` struct. Parcels will be keyed 
+by IDs of type `T`; therefore the eltype of the `Vector` you supply must be
 coercable to `T`.
 """
 function Parcellation{T}(surface::SurfaceSpace, x::AbstractVector) where T
@@ -29,36 +31,66 @@ function Parcellation{T}(surface::SurfaceSpace, x::AbstractVector) where T
 	)
 end
 
-"Create a Parcellation from a single-column Matrix"
+"""
+    Parcellation{T}(surface::SurfaceSpace, x::AbstractMatrix)
+
+Create a `Parcellation` from a single-column `Matrix` `x`
+"""
 function Parcellation{T}(surface::SurfaceSpace, x::AbstractMatrix) where T
 	size(x, 2) == 1 || error("For Matrix input, column dimension must be singleton")
 	Parcellation{T}(surface, x[:])
 end
 
-"Create an empty Parcellation"
+"""
+    Parcellation{T}(surface::SurfaceSpace)
+
+Create an empty `Parcellation`
+"""
 function Parcellation{T}(surface::SurfaceSpace) where T
 	Parcellation{T}(surface, Dict{T, Parcel}())
 end
 
-"Get the number of Parcels comprising a Parcellation"
+"""
+    size(px::Parcellation)
+
+Get the number of Parcels comprising a Parcellation
+"""
 Base.size(px::Parcellation) = length(px.parcels)
 
-"Get the number of vertices comprising the representation space of a Parcellation"
+"""
+    length(px::Parcellation)
+
+Get the number of vertices comprising the representation space of a `Parcellation`
+"""
 Base.length(px::Parcellation) = size(px.surface)
 
-"Get the IDs of all Parcels in a Parcellation"
+"""
+    keys(px::Parcellation)
+
+Get the IDs of all `Parcel`s within a `Parcellation`
+"""
 Base.keys(px::Parcellation) = keys(px.parcels)
 
-"Access the Parcels in a Parcellation"
+"""
+    values(px::Parcellation)
+
+Access the `Parcel`s in a `Parcellation`
+"""
 Base.values(px::Parcellation) = values(px.parcels)
 
-"Access a single Parcel within a Parcellation via its key of type `T`"
+"""
+    getindex(px::Parcellation{T}, k::T)
+
+Access a single Parcel within a Parcellation via its key of type `T`"
+"""
 Base.getindex(px::Parcellation{T}, k::T) where T = px.parcels[k]
 
 """
-Convert a Parcellation from its internal Dict-based representation into a `Vector{T}`.
-`T` must have a zeros(T, ...) method.
-Warning: this is not a sensible representation in the event that any Parcels overlap.
+    vec(px::Parcellation)
+
+Convert a `Parcellation` from its internal `Dict`-based representation into a `Vector{T}`.
+`T` must have a `zeros(T, ...)` method. Warning: this is not a sensible representation
+in the event that any `Parcel`s overlap.
 """
 function Base.vec(px::Parcellation{T}) where T <: Real
 	out = zeros(T, length(px))
