@@ -3,7 +3,7 @@ This Julia package supplies a set of tools for conveniently and efficiently work
 
 A `Parcel` is a discrete region of interest on the cortical surface, and in this implementation is stored internally as a `SparseVector` of vertices where each element denotes membership (`true` or `false`). The total length of that vector constitutes the surface-space representation in which the parcel is defined. The size of a parcel `size(p::Parcel)` is given as the number of non-zero elements of that vector, i.e. the number of vertices belonging to that parcel. This implementation was chosen to enable very fast performance of common operations such as getting the vertex indices, getting the size, computing overlap, dilating and eroding, etc.
 
-A `Parcellation` is a collection of `Parcel`s that all share the same space. It's typical, but not verified or required, that the parcels within it are non-overlapping. The struct contains two fields:
+A `Parcellation` is a collection of `Parcel`s that all share the same space. It's typically the case that the parcels within it are non-overlapping. The struct contains two fields:
 - a `SurfaceSpace` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
   - (if however the geometry is not of interest in your application, then a dummy surface can be created by, for example, `Hemisphere(32492)` where the only piece of information that's strictly required is the number of vertices, 32492 in this case)
 - a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type that you want to use as keys for accessing and labeling individual parcels
