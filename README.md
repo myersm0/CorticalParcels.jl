@@ -5,6 +5,7 @@ Internally, a `Parcel` is stored as a `SparseVector` of vertices where each elem
 
 A `Parcellation` is a collection of `Parcel`s that all share the same space. It's typical, but not verified and not necessarily required, that the parcels within it are non-overlapping. The struct contains two fields:
 - a `SurfaceSpace` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
+  - (if however the geometry is not of interest in your application, then a dummy surface can be created by, for example, `Hemisphere(32492)` where the only piece of information that's strictly required is the number of vertices, 32492 in this case)
 - a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type that you want to use as keys for accessing and labeling individual parcels
 
 ## Installation
@@ -35,8 +36,6 @@ Parcellation{Int}(hem, rand(1:10, 32492))
 The above examples use `Int` as the initialization parameter, and this defines the type of key that will be assigned to each parcel. Any type should be usable, however, provided that its `typemax` can represent the largest value you anticipate needing to represent. You could use `String` keys, for example, if you want to provide descriptive labels for your parcels and index them in that way.
 
 ### Accessors
-To get the number of vertices that constitute a parcel:
-```
-Parcel([1, 2, 3]; n = 32492) # create a parcel with 3 vertices within a space of 32492
+Coming soon.
 
 [![Build Status](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml?query=branch%3Amain)
