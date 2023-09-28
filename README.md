@@ -18,13 +18,13 @@ Pkg.add(url = "http://github.com/myersm0/CorticalParcels.jl")
 ## Usage
 
 ### Constructors
-The following are two basic ways in which to initialize a `Parcel`, i.e. a discrete region of interest on the cortical surface:
+The following are two basic ways in which to initialize a `Parcel`::
 ```
 Parcel(32492)                # create an empty parcel within a space of 32492 vertices
 Parcel([1, 2, 3]; n = 32492) # create a parcel with 3 vertices within a space of 32492
 ```
 
-A `Parcellation` is a collection of parcels, all within the same space, and can be initialized in several ways, such as:
+A `Parcellation` can be initialized in several ways, such as:
 ```
 hem = Hemisphere(32492) # create a Hemisphere of 39492 vertices that will define the space
 Parcellation{Int}(hem)  # create an empty parcellation within that space
