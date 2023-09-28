@@ -9,7 +9,7 @@ end
 """
     Parcel(n::Int)
 
-Create an empty `Parcel` within a representational space of `n` vertices
+Make an empty `Parcel` within a representational space of `n` vertices
 """
 function Parcel(n::Int)
 	return Parcel(spzeros(Bool, n))
@@ -17,7 +17,8 @@ end
 
 """
     Parcel(surface::SurfaceSpace, args...)
-Create an empty `Parcel` where `surface` dictates the length of the representational space
+
+Make an empty `Parcel` where `surface` dictates the length of the representational space
 """
 function Parcel(surface::SurfaceSpace, args...)
 	return Parcel(size(surface, args...))
@@ -26,7 +27,7 @@ end
 """
     Parcel(verts::Vector{Int}; n::Int)
 
-Make a `Parcel`, given its vertex indices and a representational space of length `n`
+Make a `Parcel`, given its vertex indices within a representational space of length `n`
 """
 function Parcel(verts::Vector{Int}; n::Int)
 	temp = spzeros(Bool, n)
@@ -37,14 +38,14 @@ end
 """
     Parcel(coords::Matrix, tree::KDTree)
 
-Given a Matrix of arbitrary x, y, z coordinates and a KDTree representing the 
-positions of defined cortical vertex indices, make a Parcel by mapping those 
+Given a `Matrix` of arbitrary x, y, z coordinates and a `KDTree` representing the 
+positions of defined cortical vertex indices, make a `Parcel` by mapping those 
 coordinates to the set of defined indices via nearest neighbor search
 """
 function Parcel(coords::Matrix, tree::KDTree)
 	inds, dists = knn(tree, coords, 1)
 	inds = [x[1] for x in inds] # flatten result to just a vector
-	nverts = size(tree.data: 1)
+	nverts = size(tree.data, 1)
 	all(inds .> 0) || return Parcel(nverts)
 	return Parcel(inds; nverts = nverts)
 end
@@ -52,21 +53,21 @@ end
 """
     vertices(p::Parcel)
 
-Get the vertex indices belonging to a Parcel
+Get the vertex indices belonging to a `Parcel`
 """
 vertices(p::Parcel) = p.membership.nzind
 
 """
     size(p::Parcel)
 
-Get the size (number of vertices) of a Parcel"
+Get the size (number of vertices) of a `Parcel`"
 """
 Base.size(p::Parcel) = length(p.membership.nzval)
 
 """
     length(p::Parcel)
 
-Get the length of the representational space in which a Parcel is located"
+Get the length of the representational space in which a `Parcel` is located
 """
 Base.length(p::Parcel) = p.membership.n
 
