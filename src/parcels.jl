@@ -47,7 +47,7 @@ function Parcel(coords::Matrix, tree::KDTree)
 	inds = [x[1] for x in inds] # flatten result to just a vector
 	nverts = size(tree.data, 1)
 	all(inds .> 0) || return Parcel(nverts)
-	return Parcel(inds; nverts = nverts)
+	return Parcel(inds; n = nverts)
 end
 
 """
@@ -55,14 +55,14 @@ end
 
 Get the vertex indices belonging to a `Parcel`
 """
-vertices(p::Parcel) = p.membership.nzind
+vertices(p::Parcel) = findall(p.membership)
 
 """
     size(p::Parcel)
 
 Get the size (number of non-zero vertices) of a `Parcel`"
 """
-Base.size(p::Parcel) = length(p.membership.nzval)
+Base.size(p::Parcel) = sum(p.membership.nzval)
 
 """
     nnz(p::Parcel)
@@ -85,6 +85,7 @@ Base.setdiff(p1::Parcel, p2::Parcel) = (p1.membership .& .!p2.membership).nzind
 
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
+Base.dotview(p::Parcel, args...) = view(p.membership, args...)
 
 function Base.show(io::IO, ::MIME"text/plain", p::Parcel)
 	print(io, "Parcel with $(size(p)) vertices")

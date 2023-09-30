@@ -42,10 +42,17 @@ types_to_test = [UInt16, Int64]
 	@test_throws MethodError vec(px)
 
 	# test set ops
-#	a = px[L][6779]
-#	b = px[L][18124]
-#	@test sort(union(a, b)) == sort(union(vertices(a), vertices(b)))
-#	@test setdiff(a, b) == a.membership.nzind
+	dtype = Int
+	px = Parcellation{dtype}(hem, cifti_data[L])
+	a = deepcopy(px[6779])
+	b = px[18124]
+	@test sort(union(a, b)) == sort(union(vertices(a), vertices(b)))
+	@test setdiff(a, b) == a.membership.nzind
+	a[vertices(b)] .= true
+	@test sort(intersect(a, b)) == vertices(b)
+	a2 = deepcopy(px[6779])
+	a[:] .= false
+	@test size(a) == 0
 end
 
 
