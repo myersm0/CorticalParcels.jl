@@ -26,8 +26,8 @@ The performance is going to depend on several factors. The benchmarks below are 
 - *Checking the size of a `Parcel`.* This is the only case where the current implementation lags behind alternatives.
 - *Checking a `Parcellation` for unassigned values*. This is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives.
 
-||`intersect!(a::Parcel, b::Parcel)`|`overlap(a::Parcel, b::Parcel)`|`size(p::Parcel)`|`unassigned(px::Parcellation)`|
-|:-------------|---------------------------------:|---------------------------------:|---------------------------------:|---------------------------------:|
+|              |`intersect!(p1, p2)`|`overlap(p1, p2`|`size(p)`|`unassigned(px)`|
+|:-------------|-------------------:|-------------------:|-------------------:|-------------------:|
 |`BitVector`|85 ns|108 ns|104 ns|22000 ns|
 |`SparseVector`|3047 ns|812 ns|83 ns|39000 ns|
 |`Vector`|7692 ns|49110 ns|9 ns|1024000 ns|
