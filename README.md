@@ -23,20 +23,26 @@ Pkg.add(url = "http://github.com/myersm0/CorticalParcels.jl")
 The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices.
 
 This implementation shines most in its speed of updating a parcel's membership vertices, i.e. adding or removing members, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`. For the case of adding 300 vertices to a parcel, for example, here are some benchmarks I came up with for the current implementation (top) versus an alternative `SparseVector` implementation as well as a naive `Vector{Int}` representation (simply a list of vertex index numbers):
+|`intersect!(a::Parcel, b::Parcel)`    |
+|:-------------------------------------|
 |Representation  |Median execution time|
 |:---------------|--------------------:|
 |`BitVector`|85 ns|
 |`SparseVector`|3047 ns|
 |`Vector`|7692 ns|
 
-Similarly, computing the amount of overlap of two `Parcel`s via `overlap(a::Parcel, b::Parcel)` is fast because it reduces to just taking the dot product of their respective membership vectors:
+Similarly, computing the amount of overlap of two `Parcel`s is fast because it reduces to just taking the dot product of their respective membership vectors:
+|`overlap(a::Parcel, b::Parcel)`    |
+|:-------------------------------------|
 |Representation  |Median execution time|
 |:---------------|--------------------:|
 |`BitVector`|108 ns|
 |`SparseVector`|812 ns|
 |`Vector`|49110 ns|
 
-Checking a `Parcellation` for unassigned values (`unassigned(px::Parcellation)`) is relatively "slow" compared to `Parcel`-level operations supplied (which usually reduce a single bitwise operations). But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives:
+Checking a `Parcellation` for unassigned values is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives:
+|`unassigned(px::Parcellation)`        |
+|:-------------------------------------|
 |Representation  |Median execution time|
 |:---------------|--------------------:|
 |`BitVector`|22000 ns|
@@ -44,6 +50,8 @@ Checking a `Parcellation` for unassigned values (`unassigned(px::Parcellation)`)
 |`Vector`|1024000 ns|
 
 The only case where the current implementation lags behind alternatives is in `size(p::Parcel)`:
+|`size(p::Parcel)`    |
+|:-------------------------------------|
 |Representation  |Median execution time|
 |:---------------|--------------------:|
 |`BitVector`|104 ns|
