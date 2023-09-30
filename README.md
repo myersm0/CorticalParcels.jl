@@ -20,42 +20,19 @@ Pkg.add(url = "http://github.com/myersm0/CorticalParcels.jl")
 ```
 
 ## Performance and benchmarking
-The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices.
+The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices, comparing the current implementation to an alternative using `SparseVector`s as well as a naive `Vector{Int}` representation (simply a list of vertex index numbers).
+- Adding or removing vertices. This is where the current implementation shines most, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`
+- Computing the amount of overlap of two `Parcel`s. This is fast because it reduces to just taking the dot product of their respective membership vectors.
+- Checking a `Parcellation` for unassigned values. This is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives.
+- Checking the size of a `Parcel`. This is the only case where the current implementation lags behind alternatives.
 
-This implementation shines most in its speed of updating a parcel's membership vertices, i.e. adding or removing members, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`. For the case of adding 300 vertices to a parcel, for example, here are some benchmarks I came up with for the current implementation (top) versus an alternative `SparseVector` implementation as well as a naive `Vector{Int}` representation (simply a list of vertex index numbers):
-
-`intersect!(a::Parcel, b::Parcel)`
-|Representation  |`intersect!(a::Parcel, b::Parcel)`|`overlap(a::Parcel, b::Parcel)`|`size(p::Parcel)`|`unassigned(px::Parcellation)`|
-|:---------------|---------------------------------:|---------------------------------:|---------------------------------:|---------------------------------:|
+||`intersect!(a::Parcel, b::Parcel)`|`overlap(a::Parcel, b::Parcel)`|`size(p::Parcel)`|`unassigned(px::Parcellation)`|
+|:-------------|---------------------------------:|---------------------------------:|---------------------------------:|---------------------------------:|
 |`BitVector`|85 ns|108 ns|104 ns|22000 ns|
 |`SparseVector`|3047 ns|812 ns|83 ns|39000 ns|
 |`Vector`|7692 ns|49110 ns|9 ns|1024000 ns|
 
-Similarly, computing the amount of overlap of two `Parcel`s is fast because it reduces to just taking the dot product of their respective membership vectors:
-`overlap(a::Parcel, b::Parcel)`
-|Representation  |Median execution time|
-|:---------------|--------------------:|
-|`BitVector`|108 ns|
-|`SparseVector`|812 ns|
-|`Vector`|49110 ns|
-
-Checking a `Parcellation` for unassigned values is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives:
-`unassigned(px::Parcellation)`
-|Representation  |Median execution time|
-|:---------------|--------------------:|
-|`BitVector`|22000 ns|
-|`SparseVector`|39000 ns|
-|`Vector`|1024000 ns|
-
-The only case where the current implementation lags behind alternatives is in `size(p::Parcel)`:
-`size(p::Parcel)`
-|Representation  |Median execution time|
-|:---------------|--------------------:|
-|`BitVector`|104 ns|
-|`SparseVector`|83 ns|
-|`Vector`|9 ns|
-
-While the latter is indeed a common operation and we'd like it to be as fast as possible, this implementation's considerable advantage in the other basic operations should still make it the clear frontrunner in most use cases.
+While the need to compute the size of a parcel is indeed a common operation and we'd like it to be as fast as possible, this implementation's considerable advantage in the other basic operations should still make it the clear frontrunner in most use cases.
 
 ## Usage
 ### Constructors
