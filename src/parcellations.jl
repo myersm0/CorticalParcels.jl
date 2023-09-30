@@ -133,26 +133,24 @@ relative to the total number of vertices in its surface representation
 density(px::Parcellation) = nnz(px) / length(px)
 
 function Base.show(io::IO, mime::MIME"text/plain", px::Parcellation)
-	ks = keys(px) |> collect |> sort
+	ks = @chain keys(px) collect sample(_, size(px); replace = false)
+	dens = Int(round(density(px) * 100; digits = 0))
 	print(io, "Parcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
+	print(io, " $dens% dense,")
 	print(io, " in a space of $(size(px.surface)) vertices")
-	print(io, " ($(size(px.surface, Exclusive())) wo/ medial wall)")
 	print(io, "\n")
-	for i in 1:min(length(ks), 2)
+	for i in 1:min(length(ks), 3)
 		print(io, "    ⊢ ")
 		show(io, mime, px[ks[i]]; label = ks[i])
 		print(io, "\n")
 	end
-	if length(ks) > 3
-		println(io, "    ⊢ …")
+	if length(ks) > 4
+		println(io, "    ⊢ ⋮")
 	end
-	if length(ks) > 2
+	if length(ks) > 3
 		print(io, "    ⊢ ")
 		show(io, mime, px[ks[end]]; label = ks[end])
 	end
 end
-
-
-
 
 
