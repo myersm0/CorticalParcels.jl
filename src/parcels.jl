@@ -1,6 +1,7 @@
 
 import CorticalSurfaces: vertices
-export Parcel, vertices, size, length, intersect, union, setdiff, getindex, setindex
+export Parcel, vertices, size, length, density
+export intersect, union, setdiff, getindex, setindex
 
 struct Parcel
 	membership::BitVector
@@ -70,6 +71,13 @@ Base.size(p::Parcel) = sum(p.membership)
 Get the length of the representational space in which a `Parcel` is located
 """
 Base.length(p::Parcel) = length(p.membership)
+
+"""
+    density(p::Parcel)
+
+Get the proportion of member vertices in a `Parcel` relative to the length of its space
+"""
+density(p::Parcel) = size(p) / length(p)
 
 Base.intersect(p1::Parcel, p2::Parcel) = p1.membership .& p2.membership
 Base.union(p1::Parcel, p2::Parcel) = p1.membership .| p2.membership

@@ -1,5 +1,6 @@
 
-export Parcellation, size, length, keys, values, getindex, vec, union, unassigned, nnz
+export Parcellation, size, length, keys, values, getindex
+export vec, union, unassigned, nnz, density
 
 struct Parcellation{T}
 	surface::SurfaceSpace
@@ -108,9 +109,28 @@ function Base.union(px::Parcellation{T}) where T <: Real
 	return out
 end
 
+"""
+    unassigned(px::Parcellation)
+
+Get a `BitVector` identifying unassigned vertices (`1`) in a `Parcellation`
+"""
 unassigned(px::Parcellation) = .!union(px)
 
+"""
+    nnz(px::Parcellation)
+
+Get the number of vertices within a `Parcellation` that are assigned
+to at least one `Parcel`
+"""
 nnz(px::Parcellation) = sum(union(px))
+
+"""
+    density(px::Parcellation)
+
+Get the proportion of assigned parcel vertices of a `Parcellation`
+relative to the total number of vertices in its surface representation
+"""
+density(px::Parcellation) = nnz(px) / length(px)
 
 function Base.show(io::IO, ::MIME"text/plain", px::Parcellation)
 	print(io, "Parcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
