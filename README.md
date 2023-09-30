@@ -27,7 +27,7 @@ The performance is going to depend on several factors. The benchmarks below are 
 
 While the need to compute the size of a parcel is indeed a common operation and we'd like it to be as fast as possible, this implementation's considerable advantage in the other basic operations should still make it the clear frontrunner in most use cases.
 
-If we assume that the above operations occur equally often (this is probably not true), the `SparseVector` implementation (used in this package version 0.1.0 only) achieves a 25x speedup relative to the naive case, and the present `BitVector` implementation (version 0.2+) achieves nearly a 2x speedup on top of that.
+If we assume that the above operations occur equally often (this is probably not true), the `SparseVector` implementation (used in this package version 0.1.0 only) achieves a 25x speedup relative to the naive case, and the present `BitVector` implementation (package version 0.2+) achieves a 48 speedup relative to the same. If we discount the `unassigned(px)` call, the current implementation improves to a 191x speedup.
 
 ## Installation
 Within Julia:
