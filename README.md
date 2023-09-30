@@ -27,11 +27,11 @@ This implementation shines most in its speed of updating a parcel's membership v
 - `SparseVector`:  3047 ns
 - `Vector`:        7692 ns
 
-Similarly, computing the amount of overlap of two `Parcel`s `overlap(a::Parcel, b::Parcel)` is fast because it reduces to just taking the dot product of their respective membership vectors:
+Similarly, computing the amount of overlap of two `Parcel`s via `overlap(a::Parcel, b::Parcel)` is fast because it reduces to just taking the dot product of their respective membership vectors:
 - `BitVector`:      108 ns
 - `SparseVector`:   812 ns
 - `Vector`:       49110 ns
-- 
+
 Checking a `Parcellation` for unassigned values (`unassigned(px::Parcellation)`) is relatively "slow" compared to `Parcel`-level operations supplied (which usually reduce a single bitwise operations). But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives:
 - `BitVector`:       22 microseconds
 - `SparseVector`:    39 microseconds
