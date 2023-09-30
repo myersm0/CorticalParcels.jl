@@ -65,14 +65,6 @@ Get the size (number of non-zero vertices) of a `Parcel`"
 Base.size(p::Parcel) = sum(p.membership)
 
 """
-    nnz(p::Parcel)
-
-Get the size (number of non-zero vertices) of a `Parcel`"
-"""
-SparseArrays.nnz(p::Parcel) = size(p)
-
-
-"""
     length(p::Parcel)
 
 Get the length of the representational space in which a `Parcel` is located

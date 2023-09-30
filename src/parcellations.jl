@@ -1,5 +1,5 @@
 
-export Parcellation, size, length, keys, values, getindex, vec
+export Parcellation, size, length, keys, values, getindex, vec, union, unassigned, nnz
 
 struct Parcellation{T}
 	surface::SurfaceSpace

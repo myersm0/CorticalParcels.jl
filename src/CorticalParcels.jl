@@ -5,7 +5,6 @@ using CIFTI
 using CorticalSurfaces
 using Chain
 using NearestNeighbors
-using SparseArrays
 using HDF5
 
 include("parcels.jl")
