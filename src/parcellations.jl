@@ -100,8 +100,17 @@ function Base.vec(px::Parcellation{T}) where T <: Real
 	return out
 end
 
-unassigned(px::Parcellation) = findall(vec(px) .== 0)
-nnz(px::Parcellation) = sum(vec(px) .!= 0)
+function Base.union(px::Parcellation{T}) where T <: Real
+	out = falses(length(px))
+	for k in keys(px)
+		out .|= px[k].membership
+	end
+	return out
+end
+
+unassigned(px::Parcellation) = .!union(px)
+
+nnz(px::Parcellation) = sum(union(px))
 
 function Base.show(io::IO, ::MIME"text/plain", px::Parcellation)
 	print(io, "Parcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")

@@ -77,15 +77,21 @@ SparseArrays.nnz(p::Parcel) = size(p)
 
 Get the length of the representational space in which a `Parcel` is located
 """
-Base.length(p::Parcel) = p.membership.n
+Base.length(p::Parcel) = length(p.membership)
 
 Base.intersect(p1::Parcel, p2::Parcel) = p1.membership .& p2.membership
 Base.union(p1::Parcel, p2::Parcel) = p1.membership .| p2.membership
 Base.setdiff(p1::Parcel, p2::Parcel) = p1.membership .& .!p2.membership
 
+Base.intersect!(p1::Parcel, p2::Parcel) = p1.membership .&= p2.membership
+Base.union!(p1::Parcel, p2::Parcel) = p1.membership .|= p2.membership
+Base.setdiff!(p1::Parcel, p2::Parcel) = p1.membership .&= .!p2.membership
+
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 Base.dotview(p::Parcel, args...) = view(p.membership, args...)
+
+overlap(p1::Parcel, p2::Parcel) = p1.membership' * p2.membership
 
 function Base.show(io::IO, ::MIME"text/plain", p::Parcel)
 	print(io, "Parcel with $(size(p)) vertices")
