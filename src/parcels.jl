@@ -60,9 +60,17 @@ vertices(p::Parcel) = p.membership.nzind
 """
     size(p::Parcel)
 
-Get the size (number of vertices) of a `Parcel`"
+Get the size (number of non-zero vertices) of a `Parcel`"
 """
 Base.size(p::Parcel) = length(p.membership.nzval)
+
+"""
+    size(p::Parcel)
+
+Get the size (number of non-zero vertices) of a `Parcel`"
+"""
+nnz(p::Parcel) = size(p)
+
 
 """
     length(p::Parcel)
