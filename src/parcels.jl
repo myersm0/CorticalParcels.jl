@@ -93,7 +93,16 @@ Base.dotview(p::Parcel, args...) = view(p.membership, args...)
 
 overlap(p1::Parcel, p2::Parcel) = p1.membership' * p2.membership
 
-function Base.show(io::IO, ::MIME"text/plain", p::Parcel)
-	print(io, "Parcel with $(size(p)) vertices")
+function Base.show(
+		io::IO, ::MIME"text/plain", p::Parcel; label::Any = nothing
+	)
+	siz = size(p)
+	len = length(p)
+	dens = round(density(p) * 100; digits = 2)
+	id_str = isnothing(label) ? "" : " [$label]"
+	print(io, "Parcel")
+	printstyled(io, id_str; bold = true)
+	print(io, " with $siz non-zero vertices out of $len")
+	print(io, " ($dens% dense)")
 end
 
