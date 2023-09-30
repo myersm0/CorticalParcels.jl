@@ -6,9 +6,11 @@ A `Parcel` is a discrete region of interest on the cortical surface, and in this
 A `Parcellation` is a collection of `Parcel`s that all share the same space. It's typically the case that the parcels within it are non-overlapping. The struct contains two fields:
 - a `SurfaceSpace` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
   - (if however the geometry is not of interest in your application, then a dummy surface can be created by, for example, `Hemisphere(32492)` where the only piece of information that's strictly required is the number of vertices, 32492 in this case)
-- a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type that you want to use as keys for accessing and labeling individual parcels
+- a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type (preferably one for which a `zero(::T)` method is defined) that you want to use as keys for accessing and labeling individual parcels
 
 A `Parcellation` can be mapped to a vanilla `Vector{T}` representation if desired via `vec(px::Parcellation)`.
+
+`unassigned(px::Parcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
 
 ## Installation
 Within Julia:
@@ -17,8 +19,25 @@ using Pkg
 Pkg.add(url = "http://github.com/myersm0/CorticalParcels.jl")
 ```
 
-## Usage
+## Performance and benchmarking
+The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices.
 
+This implementation shines most in its speed of updating a parcel's membership vertices, i.e. adding or removing members, via operations like `union!(a::Parcel, b::Parcel)`, `setdiff!(...)`, and `intersect!(...)`. For the case of adding 300 vertices to a parcel, for example, here are some benchmarks I came up with for the current implementation (top) versus an alternative `SparseVector` implementation that I considered as well as a naive `Vector{T}` representation (simply a list of vertex indices):
+- `BitVector`:       85 ns
+- `SparseVector`:  3047 ns
+- `Vector{T}`:     7692 ns
+
+Checking a `Parcellation` for unassigned values is relatively "slow" compared to `Parcel`-level operations supplied (which usually reduce to simple bitwise operations), but it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives:
+- `BitVector`:       22 microseconds
+- `SparseVector`:    39 microseconds
+- `Vector{T}`:     1024 microseconds
+
+The only case where the current implementation lags behind alternatives is in `size(p::Parcel)`:
+- `BitVector`:      104 ns
+- `SparseVector`:    83 ns
+- `Vector{T}`:        9 ns
+
+## Usage
 ### Constructors
 The following are two basic ways in which to initialize a `Parcel`::
 ```
