@@ -24,7 +24,6 @@ The performance is going to depend on several factors. The benchmarks below are 
 
 This implementation shines most in its speed of updating a parcel's membership vertices, i.e. adding or removing members, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`. For the case of adding 300 vertices to a parcel, for example, here are some benchmarks I came up with for the current implementation (top) versus an alternative `SparseVector` implementation as well as a naive `Vector{Int}` representation (simply a list of vertex index numbers):
 |`intersect!(a::Parcel, b::Parcel)`    |
-|:-------------------------------------|
 |Representation  |Median execution time|
 |:---------------|--------------------:|
 |`BitVector`|85 ns|
