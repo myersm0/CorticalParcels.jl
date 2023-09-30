@@ -3,7 +3,7 @@ import CorticalSurfaces: vertices
 export Parcel, vertices, size, length, intersect, union, setdiff, getindex, setindex
 
 struct Parcel
-	membership::SparseVector{Bool, Int}
+	membership::BitVector
 end
 
 """
@@ -12,7 +12,7 @@ end
 Make an empty `Parcel` within a representational space of `n` vertices
 """
 function Parcel(n::Int)
-	return Parcel(spzeros(Bool, n))
+	return Parcel(falses(n))
 end
 
 """
@@ -30,7 +30,7 @@ end
 Make a `Parcel`, given its vertex indices within a representational space of length `n`
 """
 function Parcel(verts::Vector{Int}; n::Int)
-	temp = spzeros(Bool, n)
+	temp = falses(n)
 	@inbounds temp[verts] .= true
 	return Parcel(temp)
 end
@@ -62,7 +62,7 @@ vertices(p::Parcel) = findall(p.membership)
 
 Get the size (number of non-zero vertices) of a `Parcel`"
 """
-Base.size(p::Parcel) = sum(p.membership.nzval)
+Base.size(p::Parcel) = sum(p.membership)
 
 """
     nnz(p::Parcel)
@@ -79,9 +79,9 @@ Get the length of the representational space in which a `Parcel` is located
 """
 Base.length(p::Parcel) = p.membership.n
 
-Base.intersect(p1::Parcel, p2::Parcel) = (p1.membership .& p2.membership).nzind
-Base.union(p1::Parcel, p2::Parcel) = (p1.membership .| p2.membership).nzind
-Base.setdiff(p1::Parcel, p2::Parcel) = (p1.membership .& .!p2.membership).nzind
+Base.intersect(p1::Parcel, p2::Parcel) = p1.membership .& p2.membership
+Base.union(p1::Parcel, p2::Parcel) = p1.membership .| p2.membership
+Base.setdiff(p1::Parcel, p2::Parcel) = p1.membership .& .!p2.membership
 
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
