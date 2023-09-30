@@ -21,10 +21,10 @@ Pkg.add(url = "http://github.com/myersm0/CorticalParcels.jl")
 
 ## Performance and benchmarking
 The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices, comparing the current implementation to an alternative using `SparseVector`s as well as a naive `Vector{Int}` representation (simply a list of vertex index numbers).
-- Adding or removing vertices. This is where the current implementation shines most, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`
-- Computing the amount of overlap of two `Parcel`s. This is fast because it reduces to just taking the dot product of their respective membership vectors.
-- Checking a `Parcellation` for unassigned values. This is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives.
-- Checking the size of a `Parcel`. This is the only case where the current implementation lags behind alternatives.
+- *Adding or removing vertices to/from a `Parcel`*. This is where the current implementation shines most, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`
+- *Computing the amount of overlap of two `Parcel`s*. This is fast because it reduces to just taking the dot product of their respective membership vectors.
+- *Checking the size of a `Parcel`.* This is the only case where the current implementation lags behind alternatives.
+- *Checking a `Parcellation` for unassigned values*. This is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives.
 
 ||`intersect!(a::Parcel, b::Parcel)`|`overlap(a::Parcel, b::Parcel)`|`size(p::Parcel)`|`unassigned(px::Parcellation)`|
 |:-------------|---------------------------------:|---------------------------------:|---------------------------------:|---------------------------------:|
