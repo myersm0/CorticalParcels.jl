@@ -40,6 +40,12 @@ types_to_test = [UInt16, Int64]
 	@test size(px["unassigned"]) == 32492 - 4
 	# `vec(px)` is not possible however because we can only do this where T <: Real:
 	@test_throws MethodError vec(px)
+
+	# test set ops
+#	a = px[L][6779]
+#	b = px[L][18124]
+#	@test sort(union(a, b)) == sort(union(vertices(a), vertices(b)))
+#	@test setdiff(a, b) == a.membership.nzind
 end
 
 

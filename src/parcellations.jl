@@ -95,7 +95,7 @@ in the event that any `Parcel`s overlap.
 function Base.vec(px::Parcellation{T}) where T <: Real
 	out = zeros(T, length(px))
 	for k in keys(px)
-		out[vertices(px[k])] .= k
+		@inbounds out[vertices(px[k])] .= k
 	end
 	return out
 end

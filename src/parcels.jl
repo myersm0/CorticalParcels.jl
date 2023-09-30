@@ -31,7 +31,7 @@ Make a `Parcel`, given its vertex indices within a representational space of len
 """
 function Parcel(verts::Vector{Int}; n::Int)
 	temp = spzeros(Bool, n)
-	temp[verts] .= true
+	@inbounds temp[verts] .= true
 	return Parcel(temp)
 end
 
@@ -65,11 +65,11 @@ Get the size (number of non-zero vertices) of a `Parcel`"
 Base.size(p::Parcel) = length(p.membership.nzval)
 
 """
-    size(p::Parcel)
+    nnz(p::Parcel)
 
 Get the size (number of non-zero vertices) of a `Parcel`"
 """
-nnz(p::Parcel) = size(p)
+SparseArrays.nnz(p::Parcel) = size(p)
 
 
 """
@@ -79,12 +79,12 @@ Get the length of the representational space in which a `Parcel` is located
 """
 Base.length(p::Parcel) = p.membership.n
 
-Base.intersect(p1::Parcel, p2::Parcel) = p1.membership .& p2.membership
-Base.union(p1::Parcel, p2::Parcel) = p1.membership .| p1.membership
-Base.setdiff(p1::Parcel, p2::Parcel) = p1.membership .& .!p1.membership
+Base.intersect(p1::Parcel, p2::Parcel) = (p1.membership .& p2.membership).nzind
+Base.union(p1::Parcel, p2::Parcel) = (p1.membership .| p2.membership).nzind
+Base.setdiff(p1::Parcel, p2::Parcel) = (p1.membership .& .!p2.membership).nzind
 
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
-Base.setindex(p::Parcel, args...) = setindex(p.membership, args...)
+Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 
 function Base.show(io::IO, ::MIME"text/plain", p::Parcel)
 	print(io, "Parcel with $(size(p)) vertices")
