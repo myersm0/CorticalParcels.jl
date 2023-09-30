@@ -100,6 +100,9 @@ function Base.vec(px::Parcellation{T}) where T <: Real
 	return out
 end
 
+unassigned(px::Parcellation) = findall(vec(px) .== 0)
+nnz(px::Parcellation) = sum(vec(px) .!= 0)
+
 function Base.show(io::IO, ::MIME"text/plain", px::Parcellation)
 	print(io, "Parcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
 	print(io, " in a space of $(size(px.surface)) vertices")
