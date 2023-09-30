@@ -25,11 +25,11 @@ The performance is going to depend on several factors. The benchmarks below are 
 This implementation shines most in its speed of updating a parcel's membership vertices, i.e. adding or removing members, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!`, and `intersect!`. For the case of adding 300 vertices to a parcel, for example, here are some benchmarks I came up with for the current implementation (top) versus an alternative `SparseVector` implementation as well as a naive `Vector{Int}` representation (simply a list of vertex index numbers):
 
 `intersect!(a::Parcel, b::Parcel)`
-|Representation  |Median execution time|
-|:---------------|--------------------:|
-|`BitVector`|85 ns|
-|`SparseVector`|3047 ns|
-|`Vector`|7692 ns|
+|Representation  |`intersect!(a::Parcel, b::Parcel)`|`overlap(a::Parcel, b::Parcel)`|`size(p::Parcel)`|`unassigned(px::Parcellation)`|
+|:---------------|---------------------------------:|---------------------------------:|---------------------------------:|---------------------------------:|
+|`BitVector`|85 ns|108 ns|104 ns|22000 ns|
+|`SparseVector`|3047 ns|812 ns|83 ns|39000 ns|
+|`Vector`|7692 ns|49110 ns|9 ns|1024000 ns|
 
 Similarly, computing the amount of overlap of two `Parcel`s is fast because it reduces to just taking the dot product of their respective membership vectors:
 `overlap(a::Parcel, b::Parcel)`
