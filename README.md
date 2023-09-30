@@ -30,19 +30,25 @@ This implementation shines most in its speed of updating a parcel's membership v
 |`Vector`|7692 ns|
 
 Similarly, computing the amount of overlap of two `Parcel`s via `overlap(a::Parcel, b::Parcel)` is fast because it reduces to just taking the dot product of their respective membership vectors:
-`BitVector`      108 ns
-`SparseVector`   812 ns
-`Vector`       49110 ns
+|Representation  |Median execution time|
+|:---------------|--------------------:|
+|`BitVector`|108 ns|
+|`SparseVector`|812 ns|
+|`Vector`|49110 ns|
 
 Checking a `Parcellation` for unassigned values (`unassigned(px::Parcellation)`) is relatively "slow" compared to `Parcel`-level operations supplied (which usually reduce a single bitwise operations). But it should be infrequent enough that it doesn't matter much; and it's still faster than alternatives:
-`BitVector`       22 μs
-`SparseVector`    39 μs
-`Vector`        1024 μs
+|Representation  |Median execution time|
+|:---------------|--------------------:|
+|`BitVector`|22000 ns|
+|`SparseVector`|39000 ns|
+|`Vector`|1024000 ns|
 
 The only case where the current implementation lags behind alternatives is in `size(p::Parcel)`:
-`BitVector`      104 ns
-`SparseVector`    83 ns
-`Vector`           9 ns
+|Representation  |Median execution time|
+|:---------------|--------------------:|
+|`BitVector`|104 ns|
+|`SparseVector`|83 ns|
+|`Vector`|9 ns|
 
 While the latter is indeed a common operation and we'd like it to be as fast as possible, this implementation's considerable advantage in the other basic operations should still make it the clear frontrunner in most use cases.
 
