@@ -20,6 +20,7 @@ CorticalSurfaces = "0.3.2"
 HDF5 = "0.16"
 JLD = "0.13.3"
 NearestNeighbors = "0.4.13"
+StatsBase = "0.34"
 julia = "1.8"
 
 [extras]
