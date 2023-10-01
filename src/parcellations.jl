@@ -153,4 +153,8 @@ function Base.show(io::IO, mime::MIME"text/plain", px::Parcellation)
 	end
 end
 
+function Base.show(io::IO, mime::MIME"text/plain", pxs::Vector{Parcellation{T}})
+	print(io, "Vector of $(length(pxs)) Parcellations with keys of type $T")
+end
+
 
