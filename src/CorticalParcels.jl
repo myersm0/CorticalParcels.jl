@@ -6,10 +6,11 @@ using CorticalSurfaces
 using Chain
 using NearestNeighbors
 using HDF5
+using SparseArrays
 
 include("parcels.jl")
 include("parcellations.jl")
-include("rotation.jl")
+include("morphology.jl")
 
 end
 
