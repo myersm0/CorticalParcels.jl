@@ -1,21 +1,5 @@
 
 """
-    close_gaps!(p, neighbors)
-
-Given a `Parcel` `p` and an adjacency list `neighbors`, fill in gaps, if any,
-by finding vertices in `p` where all of its neighbors but one belong to `p`
-"""
-function close_gaps!(p::Parcel, neighbors::Vector{Vector{Int}})
-	candidates = union([neigh[v] for v in vertices(p)]...)
-	while true
-		add_inds = filter(x -> sum(.!p[neigh[x]]) .<= 1, candidates)
-		p2 = Parcel(add_inds; n = length(p))
-		sum(setdiff(p2, p)) > 0 || break
-		intersect!(p, p2)
-	end
-end
-
-"""
     dilate!(p, A; limit = nothing)
 
 Perform a single pass of dilation on `Parcel` `p`, guided by adjacency matrix `A`;
@@ -24,7 +8,8 @@ optionally specify a `limit::Int` on the number of new vertices that can be adde
 function dilate!(
 		p::Parcel, A::SparseMatrixCSC; limit::Union{Nothing, Int} = nothing
 	)
-	border_verts = setdiff(unique(A[:, p].rowval), vertices(p))
+	parcel_verts = vertices(p)
+	border_verts = setdiff(unique(A[:, parcel_verts].rowval), parcel_verts)
 	length(border_verts) > 0 || return
 	if !isnothing(limit) && length(border_verts) > limit
 		border_verts = border_verts[1:limit]
@@ -55,6 +40,24 @@ function erode!(
 end
 
 """
+    close!(p, neighbors)
+
+Given a `Parcel` `p` and an adjacency list `neighbors`, perform a morphological
+closing to fill in gaps, if any, by finding vertices in `p` where all of its 
+neighbors but one belong to `p`. Note: for performance reasons, this may not be
+technically quite the same as a true closing operation, `erode!(dilate!(p))`
+"""
+function close!(p::Parcel, neighbors::Vector{Vector{Int}})
+	candidates = union([neigh[v] for v in vertices(p)]...)
+	while true
+		add_inds = filter(x -> sum(.!p[neigh[x]]) .<= 2, candidates)
+		p2 = Parcel(add_inds; n = length(p))
+		complement(p2, p) > 0 || break
+		union!(p, p2)
+	end
+end
+
+"""
 	 resize!(p, desired_size; A, neighbors)
 
 Resize a `Parcel` `p`, guided by an adjacency matrix and an adjacency list, 
@@ -74,10 +77,11 @@ function Base.resize!(
 			Δ -= nchanged
 		end
 		if nchanged == 0
-			println("Warning: could not achieve size $desired_size (stopped at $(size(p)))")
-			break
+			siz = size(p)
+			println("Could not achieve size $desired_size; stopped at $siz")
+			return siz
 		end
 	end
-	return size(p)
+	return desired_size
 end
 

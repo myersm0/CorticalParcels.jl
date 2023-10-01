@@ -15,7 +15,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 [compat]
 CIFTI = "1.0"
 Chain = "0.5"
-CorticalSurfaces = "0.3"
+CorticalSurfaces = "0.3.2"
 HDF5 = "0.16"
 JLD = "0.13.3"
 NearestNeighbors = "0.4.13"
