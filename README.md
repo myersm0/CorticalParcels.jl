@@ -4,15 +4,17 @@ This Julia package supplies a set of tools for conveniently and efficiently work
 A `Parcel` is a discrete region of interest on the cortical surface, and in this implementation is stored internally as a `BitVector` of vertices where each element denotes membership (`true` or `false`). The total length of that vector constitutes the surface-space representation in which the parcel is defined. The size of a parcel `size(p::Parcel)` is given as the number of non-zero elements of that vector, i.e. the number of vertices belonging to that parcel. This implementation was chosen to enable very fast performance of common operations such as getting the size, computing overlap with other parcels, dilating and eroding, etc, by reducing them internally to simple bitwise operations.
 
 A `Parcellation` is a collection of `Parcel`s that all share the same space. It's typically the case that the parcels within it are non-overlapping. The struct contains two fields:
-- a `SurfaceSpace` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
+- `surface`: a `SurfaceSpace` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
   - (if however the geometry is not of interest in your application, then a dummy surface can be created by, for example, `Hemisphere(32492)` where the only piece of information that's strictly required is the number of vertices, 32492 in this case)
-- a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type (preferably one for which a `zero(::T)` method is defined) that you want to use as keys for accessing and labeling individual parcels
+- `parcels`: a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type (preferably one for which a `zero(::T)` method is defined) that you want to use as keys for accessing and labeling individual parcels
 
-A `Parcellation` can be mapped to a vanilla `Vector{T}` representation if desired via `vec(px::Parcellation)`.
+Rather than having to create the `Dict{T, Parcel}` yourself, I anticipate that a `Parcellation` will most often be initialized via its `Parcellation(surface::SurfaceSpace, x::Vector{T})` constructor, since the `Vector{T}` representation is probably the way you read in an existing parcellation from disk, e.g. from a [CIFTI](https://github.com/myersm0/CIFTI.jl") file. See the Usage section below.
 
-`unassigned(px::Parcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
+A `Parcellation` can be mapped back to a vanilla `Vector{T}` representation if desired via `vec(px::Parcellation)`.
 
-## Performance and benchmarking
+Some notation notes: in the following documentation and in demos, `p`, `p1`, `p2` will refer to individual parcels; and `px` will refer to a whole parcellation.
+
+## Performance
 The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices, and compares the current `BitVector`-based implementation to an alternative using `SparseVector`s as well as to a naive `Vector{Int}` representation (simply a list of vertex index numbers).
 - *Adding or removing vertices to/from a `Parcel`*. This is where the current implementation shines most, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!` and `intersect!`.
 - *Computing the amount of overlap of two `Parcel`s*. This is fast because it reduces to just taking the dot product of their respective membership vectors.
@@ -21,13 +23,13 @@ The performance is going to depend on several factors. The benchmarks below are 
 
 |              |`intersect!(p1, p2)`|`overlap(p1, p2`|`size(p)`|`unassigned(px)`|
 |:-------------|-------------------:|-------------------:|-------------------:|-------------------:|
-|**`BitVector`**|<font color="green">**85 ns**</font>|<font color="green">**108 ns**</font>|104 ns|<font color="green">**22000** ns</font>|
+|**`BitVector`**|**85 ns**|**108 ns**|104 ns|**22000** ns|
 |`SparseVector`|3047 ns|812 ns|83 ns|39000 ns|
-|`Vector`|7692 ns|49110 ns|<font color="green">**9 ns**</font>|1024000 ns|
+|`Vector`|7692 ns|49110 ns|**9 ns**|1024000 ns|
 
 While the need to compute the size of a parcel is indeed a common operation and we'd like it to be as fast as possible, this implementation's considerable advantage in the other basic operations should still make it the clear frontrunner in most use cases.
 
-If we assume that the above operations occur equally often (this is probably not true), the `SparseVector` implementation (used in this package version 0.1.0 only) achieves a 25x speedup relative to the naive case, and the present `BitVector` implementation (package version 0.2+) achieves a 48 speedup relative to the same. If we discount the `unassigned(px)` call, the current implementation improves to a 191x speedup.
+If we assume for simplicity that the above operations occur equally often, the `SparseVector` implementation (used in this package version 0.1.0 only) achieves a 25x speedup relative to the naive case, and the present `BitVector` implementation (package version 0.2+) achieves a 48x speedup relative to the same. If we ignore the `unassigned(px)` call, the current implementation improves to a 191x speedup over baseline.
 
 ## Installation
 Within Julia:
@@ -57,5 +59,9 @@ The above examples use `Int` as the initialization parameter, and this defines t
 
 ### Accessors
 Coming soon.
+
+`unassigned(px::Parcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
+
+## Performance and benchmarking
 
 [![Build Status](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml?query=branch%3Amain)
