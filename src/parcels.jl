@@ -44,7 +44,7 @@ Given a `Matrix` of arbitrary x, y, z coordinates and a `KDTree` representing th
 positions of defined cortical vertex indices, make a `Parcel` by mapping those 
 coordinates to the set of defined indices via nearest neighbor search
 """
-function Parcel(coords::Matrix, tree::KDTree)
+function Parcel(coords::AbstractMatrix, tree::KDTree)
 	inds, dists = knn(tree, coords, 1)
 	inds = [x[1] for x in inds] # flatten result to just a vector
 	nverts = size(tree.data, 1)
