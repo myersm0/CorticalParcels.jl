@@ -1,7 +1,8 @@
 
 import CorticalSurfaces: vertices
 export Parcel, vertices, size, length, density
-export intersect, union, setdiff, getindex, setindex
+export intersect, union, setdiff, getindex, setindex, setindex!
+export overlap, complement
 
 struct Parcel
 	membership::BitVector
@@ -98,7 +99,18 @@ Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 Base.dotview(p::Parcel, args...) = view(p.membership, args...)
 
+"""
+    overlap(p1::Parcel, p2::Parcel)
+
+Compute the number of member vertices shared between two `Parcel`s `p1`, `p2`
+"""
 overlap(p1::Parcel, p2::Parcel) = p1.membership' * p2.membership
+
+"""
+    complement(p1::Parcel, p2::Parcel)
+
+Compute the number of member vertices in `Parcel` `p1` not shared by those of `p2`
+"""
 complement(p1::Parcel, p2::Parcel) = p1.membership' * .!p2.membership
 
 function Base.show(
