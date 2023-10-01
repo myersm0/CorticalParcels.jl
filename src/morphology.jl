@@ -9,7 +9,9 @@ function fill_in_gaps!(p::Parcel, neigh::Vector{Vector{Int}})
 	end
 end
 
-function dilate!(p::Parcel, A::SparseMatrixCSC; limit::Union{Nothing, Int} = nothing)
+function dilate!(
+		p::Parcel, A::SparseMatrixCSC; limit::Union{Nothing, Int} = nothing
+	)
 	border_verts = setdiff(
 		unique(A[:, setdiff(p, baddata)].rowval),
 		vertices(p)

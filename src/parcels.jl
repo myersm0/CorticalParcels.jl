@@ -87,11 +87,19 @@ Base.intersect!(p1::Parcel, p2::Parcel) = p1.membership .&= p2.membership
 Base.union!(p1::Parcel, p2::Parcel) = p1.membership .|= p2.membership
 Base.setdiff!(p1::Parcel, p2::Parcel) = p1.membership .&= .!p2.membership
 
+Base.intersect!(p::Parcel, x::BitVector) = p.membership .&= x
+Base.union!(p::Parcel, x::BitVector) = p.membership .|= x
+Base.setdiff!(p::Parcel, x::BitVector) = p.membership .&= .!x
+
+Base.union!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership[x] .= true
+Base.setdiff!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership[x] .= false
+
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 Base.dotview(p::Parcel, args...) = view(p.membership, args...)
 
 overlap(p1::Parcel, p2::Parcel) = p1.membership' * p2.membership
+complement(p1::Parcel, p2::Parcel) = p1.membership' * .!p2.membership
 
 function Base.show(
 		io::IO, ::MIME"text/plain", p::Parcel; label::Any = nothing
