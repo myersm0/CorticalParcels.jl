@@ -1,4 +1,6 @@
 
+export dilate!, erode!, close!, resize!
+
 """
     dilate!(p, A; limit = nothing)
 
