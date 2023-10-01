@@ -32,7 +32,7 @@ function erode!(
 	)
 	verts = vertices(p)
 	border_verts = verts[
-		[any([!(x in verts) for x in neigh[x]]) for x in verts]
+		[any([!(x in verts) for x in neighbors[x]]) for x in verts]
 	]
 	if !isnothing(limit) && length(border_verts) > limit
 		border_verts = border_verts[1:limit]
@@ -50,9 +50,9 @@ neighbors but one belong to `p`. Note: for performance reasons, this may not be
 technically quite the same as a true closing operation, `erode!(dilate!(p))`
 """
 function close!(p::Parcel, neighbors::Vector{Vector{Int}})
-	candidates = union([neigh[v] for v in vertices(p)]...)
+	candidates = union([neighbors[v] for v in vertices(p)]...)
 	while true
-		add_inds = filter(x -> sum(.!p[neigh[x]]) .<= 2, candidates)
+		add_inds = filter(x -> sum(.!p[neighbors[x]]) .<= 2, candidates)
 		p2 = Parcel(add_inds; n = length(p))
 		complement(p2, p) > 0 || break
 		union!(p, p2)
@@ -66,7 +66,7 @@ Resize a `Parcel` `p`, guided by an adjacency matrix and an adjacency list,
 by repeated dilation or erosion until `p` reaches `desired_size`
 """
 function Base.resize!(
-		p::Parcel, desired_size::Int; A::AbstractMatrix, neigh::Vector{Vector{Int}}
+		p::Parcel, desired_size::Int; A::AbstractMatrix, neighbors::Vector{Vector{Int}}
 	)
 	curr_size = size(p)
 	Δ = curr_size - desired_size
@@ -75,7 +75,7 @@ function Base.resize!(
 			nchanged = dilate!(p, A; limit = abs(Δ))
 			Δ += nchanged
 		else
-			nchanged = erode!(p, neigh; limit = Δ)
+			nchanged = erode!(p, neighbors; limit = Δ)
 			Δ -= nchanged
 		end
 		if nchanged == 0
