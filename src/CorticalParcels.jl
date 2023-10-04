@@ -12,6 +12,7 @@ using StatsBase: sample
 include("parcels.jl")
 include("parcellations.jl")
 include("morphology.jl")
+include("show.jl")
 
 end
 
