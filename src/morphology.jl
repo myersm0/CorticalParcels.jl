@@ -24,7 +24,7 @@ end
 
 function dilate(p::Parcel, args...)
 	p′ = deepcopy(p)
-	dilate!(p′)
+	dilate!(p′, args...)
 	return p′
 end
 
@@ -50,7 +50,7 @@ end
 
 function erode(p::Parcel, args...)
 	p′ = deepcopy(p)
-	erode!(p′)
+	erode!(p′, args...)
 	return p′
 end
 
