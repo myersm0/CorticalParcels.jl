@@ -103,19 +103,21 @@ end
 """
     interstices(p1, p2, A)
 
-Find the boundary vertices lying between two parcels
+Find the vertices lying in the boundaries between two `Parcel`s
 """
 function interstices(p1::Parcel, p2::Parcel, A::SparseMatrixCSC)
 	p1′ = dilate(p1, A)
 	p2′ = dilate(p2, A)
+	setdiff!(p1′, p1)
+	setdiff!(p2′, p2)
 	return intersect(p1′, p2′)
 end
 
 """
     interstices(px, A)
 
-Iterate through a parcellation and find, for each pair of neighboring parcels
-separated by a 1-vertex-wide gap, vertices in the interstitial region that separates them
+Iterate through a `Parcellation` and find, for each pair of neighboring `Parcel`s 
+separated by a 1-vertex-wide gap, the vertices in that interstitial region
 """
 function interstices(px::Parcellation{T}, A::SparseMatrixCSC) where T
 	v = vec(px)
@@ -130,7 +132,7 @@ function interstices(px::Parcellation{T}, A::SparseMatrixCSC) where T
 
 	# from all unique parcel-parcel pairs discovered from the above,
 	# make a dict in which to store their interstitial vertices
-	result = Dict{Tuple{T, T}, Vector{Int}}()
+	result = Dict{Tuple{T, T}, BitVector}()
 	for parcel_list in status
 		for x in parcel_list
 			for y in setdiff(parcel_list, x)
