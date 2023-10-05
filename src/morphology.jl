@@ -1,5 +1,6 @@
 
 export dilate!, erode!, close!, resize!
+export dilate, erode, interstices
 
 """
     dilate!(p, A; limit = nothing)
@@ -21,6 +22,12 @@ function dilate!(
 	return length(border_verts)
 end
 
+function dilate(p::Parcel, args...)
+	p′ = deepcopy(p)
+	dilate!(p′)
+	return p′
+end
+
 """
     erode!(p, neighbors; limit = nothing)
 
@@ -39,6 +46,12 @@ function erode!(
 	end
 	setdiff!(p, border_verts)
 	return length(border_verts)
+end
+
+function erode(p::Parcel, args...)
+	p′ = deepcopy(p)
+	erode!(p′)
+	return p′
 end
 
 """
@@ -86,4 +99,50 @@ function Base.resize!(
 	end
 	return desired_size
 end
+
+"""
+    interstices(p1, p2, A)
+
+Find the boundary vertices lying between two parcels
+"""
+function interstices(p1::Parcel, p2::Parcel, A::SparseMatrixCSC)
+	p1′ = dilate(p1, A)
+	p2′ = dilate(p2, A)
+	return intersect(p1′, p2′)
+end
+
+"""
+    interstices(px, A)
+
+Iterate through a parcellation and find, for each pair of neighboring parcels
+separated by a 1-vertex-wide gap, vertices in the interstitial region that separates them
+"""
+function interstices(px::Parcellation{T}, A::SparseMatrixCSC) where T
+	v = vec(px)
+	u = unassigned(px)
+	temp = @view A[u, :]
+
+	# find all unassigned vertices that have 2 or more parcels as neighbors
+	status = filter(
+		x -> length(x) >= 2,
+		ThreadsX.map(x -> sort(setdiff(v[x], 0)), eachrow(temp))
+	)
+
+	# from all unique parcel-parcel pairs discovered from the above,
+	# make a dict in which to store their interstitial vertices
+	result = Dict{Tuple{T, T}, Vector{Int}}()
+	for parcel_list in status
+		for x in parcel_list
+			for y in setdiff(parcel_list, x)
+				a = min(x, y)
+				b = max(x, y)
+				haskey(result, (a, b)) && continue
+				result[(a, b)] = interstices(px[a], px[b], A)
+			end
+		end
+	end
+	return result
+end
+
+
 

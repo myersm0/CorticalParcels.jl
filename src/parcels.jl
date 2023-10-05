@@ -127,5 +127,23 @@ function centroid(p::Parcel, dmat::AbstractMatrix)
 	return verts[argmin(dists)]
 end
 
+"""
+    interstices(p1, p2)
+
+Find the boundary vertices lying between two parcels
+"""
+function interstices(p1::Parcel, p2::Parcel)
+	p1_dil = deepcopy(p1) 
+	dilate!(p1_dil, A)
+	p2_dil = deepcopy(p2)
+	dilate!(p2_dil, A)
+	return intersect(p1_dil, p2_dil)
+end
+
+
+
+
+
+
 
 
