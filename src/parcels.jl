@@ -88,10 +88,15 @@ Base.intersect!(p1::Parcel, p2::Parcel) = p1.membership .&= p2.membership
 Base.union!(p1::Parcel, p2::Parcel) = p1.membership .|= p2.membership
 Base.setdiff!(p1::Parcel, p2::Parcel) = p1.membership .&= .!p2.membership
 
+Base.intersect(p::Parcel, x::BitVector) = p.membership &= x
+Base.union(p::Parcel, x::BitVector) = p.membership |= x
+Base.setdiff(p::Parcel, x::BitVector) = p.membership &= .!x
+
 Base.intersect!(p::Parcel, x::BitVector) = p.membership .&= x
 Base.union!(p::Parcel, x::BitVector) = p.membership .|= x
 Base.setdiff!(p::Parcel, x::BitVector) = p.membership .&= .!x
 
+Base.intersect!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership .*= x
 Base.union!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership[x] .= true
 Base.setdiff!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership[x] .= false
 
@@ -126,24 +131,5 @@ function centroid(p::Parcel, dmat::AbstractMatrix)
 	dists = @inbounds sum(dmat[verts, verts]; dims = 1)
 	return verts[argmin(dists)]
 end
-
-"""
-    interstices(p1, p2)
-
-Find the boundary vertices lying between two parcels
-"""
-function interstices(p1::Parcel, p2::Parcel)
-	p1_dil = deepcopy(p1) 
-	dilate!(p1_dil, A)
-	p2_dil = deepcopy(p2)
-	dilate!(p2_dil, A)
-	return intersect(p1_dil, p2_dil)
-end
-
-
-
-
-
-
 
 
