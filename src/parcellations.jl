@@ -86,6 +86,8 @@ Access a single Parcel within a Parcellation via its key of type `T`"
 """
 Base.getindex(px::Parcellation{T}, k::T) where T = px.parcels[k]
 
+Base.setindex!(px::Parcellation{T}, p::Parcel, k::T) where T = px.parcels[k] = p
+
 """
     vec(px::Parcellation)
 

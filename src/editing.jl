@@ -56,7 +56,7 @@ by those keys and delete the latter one from the dictionary
 function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::SparseMatrixCSC) where T
 	p1 = px[k1]
 	p2 = px[k2]
-	merge!(p1, p2)
+	merge!(p1, p2, A)
 	delete!(px.parcels, k2)
 	return size(p1)
 end

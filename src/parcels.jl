@@ -2,7 +2,7 @@
 import CorticalSurfaces: vertices
 export Parcel, vertices, size, length, density
 export intersect, union, setdiff, getindex, setindex, setindex!
-export overlap, complement
+export overlap, complement, centroid
 
 struct Parcel
 	membership::BitVector
@@ -128,8 +128,8 @@ a square distance matrix of dimensions (length(p), length(p)).
 function centroid(p::Parcel, dmat::AbstractMatrix)
 	all(size(dmat) .== length(p)) || error(DimensionMismatch)
 	verts = vertices(p)
-	dists = @inbounds sum(dmat[verts, verts]; dims = 1)
-	return verts[argmin(dists)]
+	summed_dists = sum(dmat[verts, verts]; dims = 1)[:]
+	return verts[argmin(summed_dists)]
 end
 
 
