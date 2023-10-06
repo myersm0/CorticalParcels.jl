@@ -29,7 +29,7 @@ end
 """
     clear!(p)
 
-Zero-out all membership values of in a `Parcel`
+Zero-out all membership vertices of a `Parcel`
 """
 clear!(p::Parcel) = p.membership .*= false
 
