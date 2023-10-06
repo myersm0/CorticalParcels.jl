@@ -8,6 +8,7 @@ using NearestNeighbors
 using HDF5
 using SparseArrays
 using StatsBase: sample
+using ThreadsX
 
 include("parcels.jl")
 include("parcellations.jl")
