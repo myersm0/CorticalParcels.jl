@@ -1,5 +1,6 @@
 
 import Graphs
+export Graph, cut, clear!, merge!
 
 function Graphs.Graph(p::Parcel, A::SparseMatrixCSC)
 	verts = vertices(p)
