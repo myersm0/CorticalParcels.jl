@@ -1,6 +1,6 @@
 
 import Graphs
-export cut, clear!, merge!
+export cut, clear!, append!, merge!
  
 function Graphs.Graph(p::Parcel, A::SparseMatrixCSC)
 	verts = vertices(p)
@@ -14,7 +14,7 @@ end
 """
     cut(p, A)
 
-Cut articulation point(s), if any, from a graph represntation of a `Parcel`, and return
+Cut articulation point(s), if any, from a graph representation of a `Parcel`, and return
 a new set of `Parcel`s: one for each connected component remaining after the vertex cut
 """
 function cut(p::Parcel, A::SparseMatrixCSC)
@@ -32,6 +32,14 @@ end
 Zero-out all membership vertices of a `Parcel`
 """
 clear!(p::Parcel) = p.membership .*= false
+
+"""
+    append!(p, v)
+
+Add vertex `v::Int` to the `p`'s membership vector
+"""
+Base.append!(p::Parcel, v::Int) = p.membership[v] = true
+Base.append!(p::Parcel, v::Vector{Int}) = p.membership[v] .= true
 
 """
     merge!(p1, p2, A)
