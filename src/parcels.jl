@@ -5,16 +5,8 @@ export intersect, union, setdiff, getindex, setindex, setindex!
 export overlap, complement, centroid
 
 struct Parcel
+	surface::SurfaceSpace
 	membership::BitVector
-end
-
-"""
-    Parcel(n::Int)
-
-Make an empty `Parcel` within a representational space of `n` vertices
-"""
-function Parcel(n::Int)
-	return Parcel(falses(n))
 end
 
 """
@@ -22,34 +14,34 @@ end
 
 Make an empty `Parcel` where `surface` dictates the length of the representational space
 """
-function Parcel(surface::SurfaceSpace, args...)
-	return Parcel(size(surface, args...))
+function Parcel(surface::SurfaceSpace)
+	return Parcel(surface, falses(size(surface)))
 end
 
 """
-    Parcel(verts::Vector{Int}; n::Int)
+	 Parcel(surface, verts)
 
-Make a `Parcel`, given its vertex indices within a representational space of length `n`
+Make a `Parcel`, given its vertex indices
 """
-function Parcel(verts::Vector{Int}; n::Int)
-	temp = falses(n)
-	@inbounds temp[verts] .= true
-	return Parcel(temp)
+function Parcel(surface::SurfaceSpace, verts::Vector{Int})
+	membership = falses(size(surface))
+	membership[verts] .= true
+	return Parcel(surface, membership)
 end
 
 """
-    Parcel(coords::Matrix, tree::KDTree)
+    Parcel(surface, coords, tree)
 
 Given a `Matrix` of arbitrary x, y, z coordinates and a `KDTree` representing the 
 positions of defined cortical vertex indices, make a `Parcel` by mapping those 
 coordinates to the set of defined indices via nearest neighbor search
 """
-function Parcel(coords::AbstractMatrix, tree::KDTree)
+function Parcel(surface::SurfaceSpace, coords::AbstractMatrix, tree::KDTree)
 	inds, dists = knn(tree, coords, 1)
 	inds = [x[1] for x in inds] # flatten result to just a vector
-	nverts = size(tree.data, 1)
-	all(inds .> 0) || return Parcel(nverts)
-	return Parcel(inds; n = nverts)
+	nverts = size(surface)
+	all(inds .> 0) || return Parcel(surface)
+	return Parcel(surface, inds)
 end
 
 """

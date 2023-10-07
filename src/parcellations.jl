@@ -27,7 +27,7 @@ function Parcellation{T}(surface::SurfaceSpace, x::AbstractVector) where T
 	return Parcellation{T}(
 		surface,
 		Dict(
-			[p => Parcel(findall(x .== p); n = nverts) for p in setdiff(x, 0)]
+			[p => Parcel(surface, findall(x .== p)) for p in setdiff(x, 0)]
 		)
 	)
 end

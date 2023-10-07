@@ -17,7 +17,7 @@ function dilate!(
 	if !isnothing(limit) && length(border_verts) > limit
 		border_verts = border_verts[1:limit]
 	end
-	border = Parcel(border_verts; n = length(p))
+	border = Parcel(p.surface, border_verts)
 	union!(p, border)
 	return length(border_verts)
 end
@@ -66,7 +66,7 @@ function close!(p::Parcel, neighbors::Vector{Vector{Int}})
 	candidates = union([neighbors[v] for v in vertices(p)]...)
 	while true
 		add_inds = filter(x -> sum(.!p[neighbors[x]]) .<= 2, candidates)
-		p2 = Parcel(add_inds; n = length(p))
+		p2 = Parcel(p.surface, add_inds)
 		complement(p2, p) > 0 || break
 		union!(p, p2)
 	end

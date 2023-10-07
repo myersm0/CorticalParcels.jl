@@ -17,12 +17,13 @@ end
 Cut articulation point(s), if any, from a graph representation of a `Parcel`, and return
 a new set of `Parcel`s: one for each connected component remaining after the vertex cut
 """
-function cut(p::Parcel, A::SparseMatrixCSC)
-	g = Graphs.Graph(p, A)
+function cut(p::Parcel)
+	haskey(p.surface, :A) || error("Operation requires adjacency matrix `A`")
+	g = Graphs.Graph(p, p.surface[:A])
 	a = Graphs.articulation(g)
 	Graphs.rem_vertices!(g, a)
 	clusters = filter(x -> length(x) > 1, Graphs.connected_components(g))
-	new_parcels = [Parcel(c; n = length(p)) for c in clusters]
+	new_parcels = [Parcel(p.surface, c) for c in clusters]
 	return new_parcels
 end
 
