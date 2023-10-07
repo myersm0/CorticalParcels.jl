@@ -16,7 +16,7 @@ Some notation notes: in the following documentation and in demos, `p`, `p1`, `p2
 
 ## Performance
 The performance is going to depend on several factors. The benchmarks below are based on using a single-hemisphere parcellation of 185 parcels, in a space of 32492 vertices, and compares the current `BitVector`-based implementation to an alternative using `SparseVector`s as well as to a naive `Vector{Int}` representation (simply a list of vertex index numbers).
-- *Adding or removing vertices to/from a `Parcel`*. This is where the current implementation shines most, via operations like `union!(a::Parcel, b::Parcel)` and analagous calls to `setdiff!` and `intersect!`.
+- *Adding or removing vertices to/from a `Parcel`*. This is where the current implementation shines most, via operations like `union!(p1::Parcel, p2::Parcel)` and analogous calls to `setdiff!` and `intersect!`.
 - *Computing the amount of overlap of two `Parcel`s*. This is fast because it reduces to just taking the dot product of their respective membership vectors.
 - *Checking the size of a `Parcel`.* This is the only case where the current implementation lags behind alternatives.
 - *Checking a `Parcellation` for unassigned values*. This is relatively "slow" compared to `Parcel`-level operations supplied. But it should be infrequent enough that it doesn't matter much; and the present `BitVector` is still faster than alternatives.
