@@ -4,17 +4,17 @@ export Parcel, vertices, size, length, density
 export intersect, union, setdiff, getindex, setindex, setindex!
 export overlap, complement
 
-struct Parcel{T <: SurfaceSpace}
+struct Parcel{T <: Hemisphere}
 	surface::T
 	membership::BitVector
 end
 
 """
-    Parcel(surface::SurfaceSpace, args...)
+    Parcel(surface::Hemisphere, args...)
 
 Make an empty `Parcel` where `surface` dictates the length of the representational space
 """
-function Parcel(surface::SurfaceSpace)
+function Parcel(surface::Hemisphere)
 	return Parcel{typeof(surface)}(surface, falses(size(surface)))
 end
 
@@ -23,7 +23,7 @@ end
 
 Make a `Parcel`, given its vertex indices
 """
-function Parcel(surface::SurfaceSpace, verts::Vector{Int})
+function Parcel(surface::Hemisphere, verts::Vector{Int})
 	membership = falses(size(surface))
 	membership[verts] .= true
 	return Parcel{typeof(surface)}(surface, membership)
@@ -36,7 +36,7 @@ Given a `Matrix` of arbitrary x, y, z coordinates and a `KDTree` representing th
 positions of defined cortical vertex indices, make a `Parcel` by mapping those 
 coordinates to the set of defined indices via nearest neighbor search
 """
-function Parcel(surface::SurfaceSpace, coords::AbstractMatrix, tree::KDTree)
+function Parcel(surface::Hemisphere, coords::AbstractMatrix, tree::KDTree)
 	inds, dists = knn(tree, coords, 1)
 	inds = [x[1] for x in inds] # flatten result to just a vector
 	nverts = size(surface)
