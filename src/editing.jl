@@ -18,7 +18,7 @@ Cut articulation point(s), if any, from a graph representation of a `Parcel`, an
 a new set of `Parcel`s: one for each connected component remaining after the vertex cut
 """
 function cut(p::Parcel)
-	haskey(p.surface, :A) || error("Operation requires adjacency matrix `A`")
+	haskey(p.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
 	g = Graphs.Graph(p, p.surface[:A])
 	a = Graphs.articulation(g)
 	Graphs.rem_vertices!(g, a)
