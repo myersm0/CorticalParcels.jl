@@ -108,8 +108,13 @@ function Base.resize!(
 	return desired_size
 end
 
+"""
+	 resize!(p, desired_size)
+
+Resize a `Parcel` `p`, using adjacency information from its `surface` field
+"""
 Base.resize!(p::Parcel, desired_size::Int) =
-	resize!(p, desired_size; A = p.surface[:A], neighbors = p.surface[:neighbors])
+	resize!(p, desired_size, p.surface[:A], p.surface[:neighbors])
 
 """
     interstices(p1, p2, A)
