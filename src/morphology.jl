@@ -124,7 +124,7 @@ function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
 	return intersect(p1′, p2′)
 end
 
-interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p.surface[:A])
+interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p1.surface[:A])
 
 """
     interstices(px, A)
