@@ -26,7 +26,7 @@ dilate!(p::Parcel; limit::Union{Nothing, Int} = nothing) =
 	dilate!(p, p.surface[:A]; limit = limit)
 
 function dilate(p::Parcel, args...)
-	p′ = deepcopy(p)
+	p′ = Parcel(p.surface, vertices(p))
 	dilate!(p′, args...)
 	return p′
 end
@@ -55,7 +55,7 @@ erode!(p::Parcel; limit::Union{Nothing, Int} = nothing) =
 	erode!(p, p.surface[:neighbors]; limit = limit)
 
 function erode(p::Parcel, args...)
-	p′ = deepcopy(p)
+	p′ = Parcel(p.surface, vertices(p))
 	erode!(p′, args...)
 	return p′
 end
@@ -78,7 +78,7 @@ function close!(p::Parcel, neighbors::AdjacencyList)
 	end
 end
 
-close!(p::Parcel) = close!(p, p.surf[:neighbors])
+close!(p::Parcel) = close!(p, p.surface[:neighbors])
 
 """
 	 resize!(p, desired_size, A, neighbors)
