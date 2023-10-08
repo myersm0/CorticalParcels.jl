@@ -4,8 +4,8 @@ export Parcel, vertices, size, length, density
 export intersect, union, setdiff, getindex, setindex, setindex!
 export overlap, complement
 
-struct Parcel
-	surface::SurfaceSpace
+struct Parcel{T <: SurfaceSpace}
+	surface::T
 	membership::BitVector
 end
 
@@ -15,7 +15,7 @@ end
 Make an empty `Parcel` where `surface` dictates the length of the representational space
 """
 function Parcel(surface::SurfaceSpace)
-	return Parcel(surface, falses(size(surface)))
+	return Parcel{typeof(surface)}(surface, falses(size(surface)))
 end
 
 """
@@ -26,7 +26,7 @@ Make a `Parcel`, given its vertex indices
 function Parcel(surface::SurfaceSpace, verts::Vector{Int})
 	membership = falses(size(surface))
 	membership[verts] .= true
-	return Parcel(surface, membership)
+	return Parcel{typeof(surface)}(surface, membership)
 end
 
 """
@@ -41,7 +41,7 @@ function Parcel(surface::SurfaceSpace, coords::AbstractMatrix, tree::KDTree)
 	inds = [x[1] for x in inds] # flatten result to just a vector
 	nverts = size(surface)
 	all(inds .> 0) || return Parcel(surface)
-	return Parcel(surface, inds)
+	return Parcel{typeof(surface)}(surface, inds)
 end
 
 """
