@@ -52,6 +52,25 @@ Get the vertex indices belonging to a `Parcel`
 vertices(p::Parcel) = findall(p.membership)
 
 """
+	 vertices(p::Parcel, Exclusive())
+
+Get the vertex indices belonging to a `Parcel` and adjust for exclusion 
+of medial wall vertices
+"""
+vertices(p::Parcel, ::Exclusive) = collapse(findall(p.membership), p.surface)
+
+"""
+	 vertices(p::Parcel, Bilateral(), Exclusive())
+
+Get the vertex indices belonging to a `Parcel` and adjust for exclusion 
+of medial wall vertices, and make the indexing relative to the whole brain
+"""
+function vertices(p::Parcel, ::Bilateral, ::Exclusive)
+	temp = vertices(p.surface, Bilateral(), Exclusive())
+	return temp[collapse(findall(p.membership), p.surface)]
+end
+
+"""
     size(p::Parcel)
 
 Get the size (number of non-zero vertices) of a `Parcel`"
