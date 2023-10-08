@@ -2,7 +2,7 @@
 import CorticalSurfaces: vertices
 export Parcel, vertices, size, length, density
 export intersect, union, setdiff, getindex, setindex, setindex!
-export overlap, complement, centroid
+export overlap, complement
 
 struct Parcel
 	surface::SurfaceSpace

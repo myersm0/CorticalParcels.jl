@@ -2,7 +2,7 @@
 import Graphs
 export cut, clear!, append!, merge!
  
-function Graphs.Graph(p::Parcel, A::SparseMatrixCSC)
+function Graphs.Graph(p::Parcel, A::AdjacencyMatrix)
 	verts = vertices(p)
 	nvertices = length(p)
 	temp = spzeros(Bool, nvertices, nvertices)
@@ -47,7 +47,7 @@ Base.append!(p::Parcel, v::Vector{Int}) = p.membership[v] .= true
 
 Merge two `Parcel`s by moving the member vertices of `p2` to `p1`
 """
-function Base.merge!(p1::Parcel, p2::Parcel, A::SparseMatrixCSC)
+function Base.merge!(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
 	i = interstices(p1, p2, A)
 	sum(i) > 0 || return 0
 	union!(p1, i)
@@ -62,7 +62,7 @@ end
 Given a `Parcellation{T}` and two keys of type `T`, merge the two `Parcel`s denoted
 by those keys and delete the latter one from the dictionary
 """
-function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::SparseMatrixCSC) where T
+function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) where T
 	p1 = px[k1]
 	p2 = px[k2]
 	merge!(p1, p2, A)

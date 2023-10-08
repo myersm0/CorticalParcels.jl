@@ -9,7 +9,7 @@ Perform a single pass of dilation on `Parcel` `p`, guided by adjacency matrix `A
 optionally specify a `limit::Int` on the number of new vertices that can be added
 """
 function dilate!(
-		p::Parcel, A::SparseMatrixCSC; limit::Union{Nothing, Int} = nothing
+		p::Parcel, A::AdjacencyMatrix; limit::Union{Nothing, Int} = nothing
 	)
 	parcel_verts = vertices(p)
 	border_verts = setdiff(unique(A[:, parcel_verts].rowval), parcel_verts)
@@ -38,7 +38,7 @@ Perform a single pass of erosion on `Parcel` `p`, guided by adjacency list `neig
 optionally specify a `limit::Int` on the number of vertices that you want to remove
 """
 function erode!(
-		p::Parcel, neighbors::Vector{Vector{Int}}; limit::Union{Nothing, Int} = nothing
+		p::Parcel, neighbors::AdjacencyList; limit::Union{Nothing, Int} = nothing
 	)
 	verts = vertices(p)
 	border_verts = verts[
@@ -68,7 +68,7 @@ closing to fill in gaps, if any, by finding vertices in `p` where all of its
 neighbors but one belong to `p`. Note: for performance reasons, this may not be
 technically quite the same as a true closing operation, `erode!(dilate!(p))`
 """
-function close!(p::Parcel, neighbors::Vector{Vector{Int}})
+function close!(p::Parcel, neighbors::AdjacencyList)
 	candidates = union([neighbors[v] for v in vertices(p)]...)
 	while true
 		add_inds = filter(x -> sum(.!p[neighbors[x]]) .<= 2, candidates)
@@ -81,13 +81,13 @@ end
 close!(p::Parcel) = close!(p, p.surf[:neighbors])
 
 """
-	 resize!(p, desired_size; A, neighbors)
+	 resize!(p, desired_size, A, neighbors)
 
 Resize a `Parcel` `p`, guided by an adjacency matrix and an adjacency list, 
 by repeated dilation or erosion until `p` reaches `desired_size`
 """
 function Base.resize!(
-		p::Parcel, desired_size::Int; A::AbstractMatrix, neighbors::Vector{Vector{Int}}
+		p::Parcel, desired_size::Int, A::AdjacencyMatrix, neighbors::AdjacencyList
 	)
 	curr_size = size(p)
 	Δ = curr_size - desired_size
@@ -116,7 +116,7 @@ Base.resize!(p::Parcel, desired_size::Int) =
 
 Find the vertices lying in the boundaries between two `Parcel`s
 """
-function interstices(p1::Parcel, p2::Parcel, A::SparseMatrixCSC)
+function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
 	p1′ = dilate(p1, A)
 	p2′ = dilate(p2, A)
 	setdiff!(p1′, p1)
@@ -132,7 +132,7 @@ interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p.surface[:A])
 Iterate through a `Parcellation` and find, for each pair of neighboring `Parcel`s 
 separated by a 1-vertex-wide gap, the vertices in that interstitial region
 """
-function interstices(px::Parcellation{T}, A::SparseMatrixCSC) where T
+function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 	v = vec(px)
 	u = unassigned(px)
 	temp = @view A[u, :]

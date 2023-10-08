@@ -1,9 +1,9 @@
 
-export DistanceMetric, CentroidToCentroid, ClosestVertices, centroid, distance
+export DistanceMethod, CentroidToCentroid, NearestNeighbors, centroid, distance
 
-abstract type DistanceMetric end
+abstract type DistanceMethod end
 struct CentroidToCentroid <: end
-struct ClosestVertices <: end
+struct NearestNeighbors <: end
 
 """
     centroid(p, distances)
@@ -12,7 +12,7 @@ Find the centroid of a parcel (the vertex that has the least summed distance
 to all other vertices in the parcel). `distances` is expected to be
 a square distance matrix of dimensions (length(p), length(p)).
 """
-function centroid(p::Parcel, distances::AbstractMatrix)
+function centroid(p::Parcel, distances::DistanceMatrix)
 	all(size(distances) .== length(p)) || error(DimensionMismatch)
 	verts = vertices(p)
 	summed_dists = sum(distances[verts, verts]; dims = 1)[:]
@@ -23,11 +23,11 @@ end
 	 distance(p1, p2, distances; method = CentroidToCentroid())
 
 Find the distance between `Parcel`s `p1` and `p2` according to distance matrix
-`distances`, using `method` (one of `CentroidToCentroid()` or `ClosestVertices`)
+`distances`, using `method` (one of `CentroidToCentroid()` or `NearestNeighbors`)
 """
 function distance(
-		p1::Parcel, p2::Parcel, distances::AbstractMatrix; 
-		method::DistanceMetric = CentroidToCentroid()
+		p1::Parcel, p2::Parcel, distances::DistanceMatrix; 
+		method::DistanceMethod = CentroidToCentroid()
 	)
 	distance(method, p1, p2, distances)
 end
@@ -36,15 +36,15 @@ end
 	 distance(p1, p2; method = CentroidToCentroid())
 
 Find the distance between `Parcel`s `p1` and `p2` using `method` (one of 
-`CentroidToCentroid()` or `ClosestVertices`). This method call will expect to find a
+`CentroidToCentroid()` or `NearestNeighbors`). This method call will expect to find a
 distance matrix `:distances` belonging to the first parcel's `SurfaceSpace` struct
 """
-function distance(p1::Parcel, p2::Parcel, method::DistanceMetric = CentroidToCentroid())
+function distance(p1::Parcel, p2::Parcel, method::DistanceMethod = CentroidToCentroid())
 	distance(method, p1, p2, p1.surface[:distances])
 end
 
 function distance(
-		::CentroidToCentroid, p1::Parcel, p2::Parcel, distances::AbstractMatrix
+		::CentroidToCentroid, p1::Parcel, p2::Parcel, distances::DistanceMatrix
 	)
 	c1 = centroid(p1, distances)
 	c2 = centroid(p2, distances)
@@ -52,7 +52,7 @@ function distance(
 end
 
 function distance(
-		::ClosestVertices, p1::Parcel, p2::Parcel, distances::AbstractMatrix
+		::NearestNeighbors, p1::Parcel, p2::Parcel, distances::DistanceMatrix
 	)
 	return minimum(distances[vertices(p1), vertices(p2)])
 end
