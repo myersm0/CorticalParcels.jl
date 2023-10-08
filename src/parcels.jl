@@ -129,18 +129,3 @@ Compute the number of member vertices in `Parcel` `p1` not shared by those of `p
 """
 complement(p1::Parcel, p2::Parcel) = p1.membership' * .!p2.membership
 
-"""
-    centroid(p, dmat)
-
-Find the centroid of a parcel (the vertex that has the least summed distance
-to all other vertices in the parcel). `dmat` is expected to be
-a square distance matrix of dimensions (length(p), length(p)).
-"""
-function centroid(p::Parcel, dmat::AbstractMatrix)
-	all(size(dmat) .== length(p)) || error(DimensionMismatch)
-	verts = vertices(p)
-	summed_dists = sum(dmat[verts, verts]; dims = 1)[:]
-	return verts[argmin(summed_dists)]
-end
-
-
