@@ -1,9 +1,9 @@
 
-export DistanceMethod, CentroidToCentroid, NearestNeighbors, centroid, distance
+export DistanceMethod, CentroidToCentroid, ClosestVertices, centroid, distance
 
 abstract type DistanceMethod end
 struct CentroidToCentroid <: DistanceMethod end
-struct NearestNeighbors <: DistanceMethod end
+struct ClosestVertices <: DistanceMethod end
 
 """
     centroid(p, distances)
@@ -23,7 +23,7 @@ end
 	 distance(p1, p2, distances; method = CentroidToCentroid())
 
 Find the distance between `Parcel`s `p1` and `p2` according to distance matrix
-`distances`, using `method` (one of `CentroidToCentroid()` or `NearestNeighbors`)
+`distances`, using `method` (one of `CentroidToCentroid()` or `ClosestVertices`)
 """
 function distance(
 		p1::Parcel, p2::Parcel, distances::DistanceMatrix; 
@@ -36,7 +36,7 @@ end
 	 distance(p1, p2; method = CentroidToCentroid())
 
 Find the distance between `Parcel`s `p1` and `p2` using `method` (one of 
-`CentroidToCentroid()` or `NearestNeighbors`). This method call will expect to find a
+`CentroidToCentroid()` or `ClosestVertices`). This method call will expect to find a
 distance matrix `:distances` belonging to the first parcel's `SurfaceSpace` struct
 """
 function distance(p1::Parcel, p2::Parcel, method::DistanceMethod = CentroidToCentroid())
@@ -52,7 +52,7 @@ function distance(
 end
 
 function distance(
-		::NearestNeighbors, p1::Parcel, p2::Parcel, distances::DistanceMatrix
+		::ClosestVertices, p1::Parcel, p2::Parcel, distances::DistanceMatrix
 	)
 	return minimum(distances[vertices(p1), vertices(p2)])
 end
