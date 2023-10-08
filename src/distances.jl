@@ -2,8 +2,8 @@
 export DistanceMethod, CentroidToCentroid, NearestNeighbors, centroid, distance
 
 abstract type DistanceMethod end
-struct CentroidToCentroid <: end
-struct NearestNeighbors <: end
+struct CentroidToCentroid <: DistanceMethod end
+struct NearestNeighbors <: DistanceMethod end
 
 """
     centroid(p, distances)

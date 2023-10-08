@@ -17,6 +17,7 @@ include("parcels.jl")
 include("parcellations.jl")
 include("morphology.jl")
 include("editing.jl")
+include("distances.jl")
 include("show.jl")
 
 end
