@@ -50,8 +50,8 @@ hem = Hemisphere(32492) # create a Hemisphere of 32492 vertices that will define
 ### Constructors
 Once a `Hemisphere` has been created (we'll call it `hem` here), the following are two basic ways in which to initialize a `Parcel`::
 ```
-Parcel(hem)                  # create an empty parcel within a space of 32492 vertices
-Parcel(hem, [1, 2, 3])       # create a parcel with 3 vertices within a space of 32492
+Parcel(hem)                  # create an empty parcel within the same space as `hem`
+Parcel(hem, [5, 6, 7])       # create a parcel with 3 vertices within the same space as `hem`
 ```
 
 A `Parcellation` can be initialized in several ways, such as:
@@ -66,10 +66,10 @@ Parcellation{Int}(hem, rand(1:10, 32492))
 The above examples use `Int` as the initialization parameter, and this defines the type of key that will be assigned to each parcel. Any type should be usable, however, provided that its `typemax` can represent the largest value you anticipate needing to store. You could use `String` keys, for example, if you want to provide descriptive labels for your parcels and index them in that way.
 
 ### Accessors
-Coming soon.
-
 `unassigned(px::Parcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
 
 `vec(px::Parcellation)` will reduce the parcellation to a single `Vector{T}`. If you constructed `px` from a `Vector{T}` (and have not changed any of its elements), this operation should return that same vector.
+
+More details and a demo coming soon.
 
 [![Build Status](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml?query=branch%3Amain)
