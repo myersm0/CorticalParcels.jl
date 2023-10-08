@@ -41,7 +41,7 @@ function Parcel(surface::Hemisphere, coords::AbstractMatrix, tree::KDTree)
 	inds = [x[1] for x in inds] # flatten result to just a vector
 	nverts = size(surface)
 	all(inds .> 0) || return Parcel(surface)
-	return Parcel{typeof(surface)}(surface, inds)
+	return Parcel(surface, inds)
 end
 
 """
