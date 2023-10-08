@@ -39,11 +39,19 @@ Pkg.add("CorticalParcels")
 ```
 
 ## Usage
-### Constructors
-The following are two basic ways in which to initialize a `Parcel`::
+The package [CorticalSurfaces.jl](https://github.com/myersm0/CorticalSurfaces.jl) provides the definitions of `Hemisphere` and `CorticalSurface` types (and their supertype `SurfaceSpace`), on which many of the operations in this package depend. So first of all, load both packages and create a `Hemisphere` struct that will define the vertex space. At a minimum, you need to specify the number of vertices in that space, for example 32492; but see [CorticalSurfaces.jl](https://github.com/myersm0/CorticalSurfaces.jl) for further details.
 ```
-Parcel(32492)                # create an empty parcel within a space of 32492 vertices
-Parcel([1, 2, 3]; n = 32492) # create a parcel with 3 vertices within a space of 32492
+using CorticalSurfaces
+using CorticalParcels
+
+hem = Hemisphere(32492) # create a Hemisphere of 32492 vertices that will define the space
+```
+
+### Constructors
+Once a `Hemisphere` has been created (we'll call it `hem` here), the following are two basic ways in which to initialize a `Parcel`::
+```
+Parcel(hem)                  # create an empty parcel within a space of 32492 vertices
+Parcel(hem, [1, 2, 3])       # create a parcel with 3 vertices within a space of 32492
 ```
 
 A `Parcellation` can be initialized in several ways, such as:
@@ -55,13 +63,13 @@ Parcellation{Int}(hem)  # create an empty parcellation within that space
 Parcellation{Int}(hem, rand(1:10, 32492))
 ```
 
-The above examples use `Int` as the initialization parameter, and this defines the type of key that will be assigned to each parcel. Any type should be usable, however, provided that its `typemax` can represent the largest value you anticipate needing to represent. You could use `String` keys, for example, if you want to provide descriptive labels for your parcels and index them in that way.
+The above examples use `Int` as the initialization parameter, and this defines the type of key that will be assigned to each parcel. Any type should be usable, however, provided that its `typemax` can represent the largest value you anticipate needing to store. You could use `String` keys, for example, if you want to provide descriptive labels for your parcels and index them in that way.
 
 ### Accessors
 Coming soon.
 
 `unassigned(px::Parcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
 
-## Performance and benchmarking
+`vec(px::Parcellation)` will reduce the parcellation to a single `Vector{T}`. If you constructed `px` from a `Vector{T}` (and have not changed any of its elements), this operation should return that same vector.
 
 [![Build Status](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml?query=branch%3Amain)
