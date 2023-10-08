@@ -17,14 +17,18 @@ end
 Cut articulation point(s), if any, from a graph representation of a `Parcel`, and return
 a new set of `Parcel`s: one for each connected component remaining after the vertex cut
 """
-function cut(p::Parcel)
-	haskey(p.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
-	g = Graphs.Graph(p, p.surface[:A])
+function cut(p::Parcel, A::AdjacencyMatrix)
+	g = Graphs.Graph(p, A)
 	a = Graphs.articulation(g)
 	Graphs.rem_vertices!(g, a)
 	clusters = filter(x -> length(x) > 1, Graphs.connected_components(g))
 	new_parcels = [Parcel(p.surface, c) for c in clusters]
 	return new_parcels
+end
+
+function cut(p::Parcel)
+	haskey(p.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
+	return cut(p, p.surface[:A])
 end
 
 """
@@ -56,6 +60,12 @@ function Base.merge!(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
 	return size(p1)
 end
 
+function Base.merge!(p1::Parcel, p2::Parcel)
+	haskey(p1.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
+	p1.surface == p2.surface || error("Surfaces must be the same for both parcels")
+	return merge!(p1, p2, p1.surface[:A])
+end
+
 """
     merge!(px, k1, k2, A)
 
@@ -68,6 +78,11 @@ function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) wher
 	merge!(p1, p2, A)
 	delete!(px.parcels, k2)
 	return size(p1)
+end
+
+function Base.merge!(px::Parcellation{T}, k1::T, k2::T) where T
+	haskey(px.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
+	return merge!(px, k1, k2, px.surface[:A])
 end
 
 
