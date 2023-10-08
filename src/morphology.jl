@@ -22,6 +22,9 @@ function dilate!(
 	return length(border_verts)
 end
 
+dilate!(p::Parcel; limit::Union{Nothing, Int} = nothing) =
+	dilate!(p, p.surface[:A]; limit = limit)
+
 function dilate(p::Parcel, args...)
 	p′ = deepcopy(p)
 	dilate!(p′, args...)
@@ -48,6 +51,9 @@ function erode!(
 	return length(border_verts)
 end
 
+erode!(p::Parcel; limit::Union{Nothing, Int} = nothing) = 
+	erode!(p, p.surface[:neighbors]; limit = limit)
+
 function erode(p::Parcel, args...)
 	p′ = deepcopy(p)
 	erode!(p′, args...)
@@ -71,6 +77,8 @@ function close!(p::Parcel, neighbors::Vector{Vector{Int}})
 		union!(p, p2)
 	end
 end
+
+close!(p::Parcel) = close!(p, p.surf[:neighbors])
 
 """
 	 resize!(p, desired_size; A, neighbors)
@@ -100,6 +108,9 @@ function Base.resize!(
 	return desired_size
 end
 
+Base.resize!(p::Parcel, desired_size::Int) =
+	resize!(p, desired_size; A = p.surface[:A], neighbors = p.surface[:neighbors])
+
 """
     interstices(p1, p2, A)
 
@@ -112,6 +123,8 @@ function interstices(p1::Parcel, p2::Parcel, A::SparseMatrixCSC)
 	setdiff!(p2′, p2)
 	return intersect(p1′, p2′)
 end
+
+interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p.surface[:A])
 
 """
     interstices(px, A)
@@ -146,5 +159,6 @@ function interstices(px::Parcellation{T}, A::SparseMatrixCSC) where T
 	return result
 end
 
+interstices(px::Parcellation) = interstices(px, px.surface[:A])
 
 
