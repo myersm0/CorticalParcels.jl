@@ -1,7 +1,7 @@
 name = "CorticalParcels"
 uuid = "40903625-a1ea-44c8-b7f6-e840be33f0ed"
 authors = ["Michael Myers"]
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 CIFTI = "8026ff91-9e86-4f19-bd27-c139e9e8bf7a"
