@@ -15,26 +15,43 @@ hem = Hemisphere(coords, mw; triangles = triangle)
 hem[:neighbors] = make_adjacency_list(hem)
 hem[:A] = make_adjacency_matrix(hem)
 
+# note that the two adjacency items created above are required for many parcelwise ops
+# (particularly ones that require graph traversal such as erode!() and dilate!())
+
 # now make a "parcel" with just a single vertex, 17344
 p1 = Parcel(hem, [17344])
 
 # make another parcel at vertex 8423 (which happens to be 30mm from the previous one)
 p2 = Parcel(hem, [8423])
 
-# grow the first parcel a couple of times ...
-dilate!(p1) # 6 vertices are added
+# grow the first parcel a couple of times, and check the size afterwards for demo ...
+dilate!(p1) # 6 vertices are added, so size is now 7
 @assert size(p1) == 7
-dilate!(p1) # 12 vertices are added
+dilate!(p1) # 12 vertices are added, so size is now 19
 @assert size(p1) == 19
 
-# the parcels are still distant enough that there's not yet a small margin
-# or interstice separating them:
-@assert sum(interstices(p1, p2)) == 0
+p1′ = Parcel(p1)
+dilate!(p1′)
+erode!(p1′)
+@assert isequal(p1, p1′)
 
-# but we can grow one of the parcels until this is the case,
-# i.e. until they almost touch:
+# repeatedly dilate a parcel to an arbitrary size, say 500 vertices:
+resize!(p1′, 500)
+
+# or shrink (erode) it to 100 vertices:
+resize!(p1′, 100)
+
+# if you want to see which vertices belong to a parcel:
+vertices(p1′)
+
+# remove all vertices from the parcel
+clear!(p1′)
+
+# grow p2 iteratively until there's only a small margin or interstice 
+# separating it from p1:
 while sum(interstices(p1, p2)) == 0
 	dilate!(p2)
+	println("Dilated p2 to size $(size(p2))")
 end
 
 # they still don't overlap yet ...
@@ -66,7 +83,7 @@ setdiff!(px[1], margin_vertices)
 setdiff!(px[1], p2)
 @assert overlap(px[1], p1) == size(px[1]) # px[1] is now identical with p1 again
 
-# add parcel #2 back in
+# add a copy of parcel #2 back in
 px[2] = Parcel(p2)
 
 # add just one vertex from the interstices so that the two parcels become contiguous
@@ -90,6 +107,11 @@ orig_parcels = cut(p3)
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 temp = CIFTI.load(parcel_file)
 px = Parcellation{Int}(hem, temp[L]) # just use left hem for demo
+
+# every time you show px, it will display properties of a few random parcels
+px
+px
+px
 
 # a few miscellaneous functions:
 keys(px)       # get the parcel IDs (of type T) from Parcellation{T} px

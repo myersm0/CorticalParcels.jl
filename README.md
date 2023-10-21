@@ -39,6 +39,8 @@ Pkg.add("CorticalParcels")
 ```
 
 ## Usage
+A full demo of the basic functionality can be found in `examples/demo.jl`.
+
 The package [CorticalSurfaces.jl](https://github.com/myersm0/CorticalSurfaces.jl) provides the definitions of `Hemisphere` and `CorticalSurface` types (and their supertype `SurfaceSpace`), on which many of the operations in this package depend. So first of all, load both packages and create a `Hemisphere` struct that will define the vertex space. At a minimum, you need to specify the number of vertices in that space, for example 32492; but see [CorticalSurfaces.jl](https://github.com/myersm0/CorticalSurfaces.jl) for further details.
 ```
 using CorticalSurfaces
