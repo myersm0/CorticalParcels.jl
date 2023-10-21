@@ -13,8 +13,10 @@ using ThreadsX
 # import some type-aliasing constants for convenience
 import CorticalSurfaces: AdjacencyList, AdjacencyMatrix, DistanceMatrix
 
-include("parcels.jl")
-include("parcellations.jl")
+include("types.jl")
+include("constructors.jl")
+include("accessors_mutators.jl")
+include("set_ops.jl")
 include("morphology.jl")
 include("editing.jl")
 include("distances.jl")
