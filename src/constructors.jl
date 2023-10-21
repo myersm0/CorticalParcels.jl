@@ -36,6 +36,15 @@ function Parcel(surface::Hemisphere, coords::AbstractMatrix, tree::KDTree)
 	return Parcel(surface, inds)
 end
 
+"""
+    Parcel(p)
+
+Create a new `Parcel` that's a copy of another one `p`
+"""
+function Parcel(p::Parcel)
+	Parcel(p.surface, vertices(p))
+end
+
 
 # ===== Parcellation constructors =====
 

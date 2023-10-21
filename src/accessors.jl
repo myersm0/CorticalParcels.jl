@@ -54,6 +54,12 @@ density(p::Parcel) = size(p) / length(p)
 
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 
+Base.isequal(p1::Parcel, p2::Parcel) = 
+	p1.surface == p2.surface && p1.membership == p2.membership
+
+Base.isequal(p1::Parcel, x::BitVector) = 
+	p1.membership == p2.membership
+
 
 # ===== Parcellation functions =====
 

@@ -10,9 +10,9 @@ Base.intersect!(p1::Parcel, p2::Parcel) = p1.membership .&= p2.membership
 Base.union!(p1::Parcel, p2::Parcel) = p1.membership .|= p2.membership
 Base.setdiff!(p1::Parcel, p2::Parcel) = p1.membership .&= .!p2.membership
 
-Base.intersect(p::Parcel, x::BitVector) = p.membership &= x
-Base.union(p::Parcel, x::BitVector) = p.membership |= x
-Base.setdiff(p::Parcel, x::BitVector) = p.membership &= .!x
+Base.intersect(p::Parcel, x::BitVector) = p.membership .&= x
+Base.union(p::Parcel, x::BitVector) = p.membership .|= x
+Base.setdiff(p::Parcel, x::BitVector) = p.membership .&= .!x
 
 Base.intersect!(p::Parcel, x::BitVector) = p.membership .&= x
 Base.union!(p::Parcel, x::BitVector) = p.membership .|= x
