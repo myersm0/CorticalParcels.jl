@@ -15,7 +15,7 @@ import CorticalSurfaces: AdjacencyList, AdjacencyMatrix, DistanceMatrix
 
 include("types.jl")
 include("constructors.jl")
-include("accessors_mutators.jl")
+include("accessors.jl")
 include("set_ops.jl")
 include("morphology.jl")
 include("editing.jl")

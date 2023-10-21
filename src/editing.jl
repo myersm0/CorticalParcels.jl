@@ -1,6 +1,12 @@
 
 import Graphs
-export cut, clear!, append!, merge!
+export setindex!, cut, clear!, append!, merge!
+
+Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
+
+Base.dotview(p::Parcel, args...) = view(p.membership, args...)
+
+Base.setindex!(px::Parcellation{T}, p::Parcel, k::T) where T = px.parcels[k] = p
  
 function Graphs.Graph(p::Parcel, A::AdjacencyMatrix)
 	verts = vertices(p)

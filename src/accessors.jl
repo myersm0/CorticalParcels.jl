@@ -1,6 +1,6 @@
 
 import CorticalSurfaces: vertices
-export vertices, size, length, keys, values, getindex, setindex!
+export vertices, size, length, keys, values, getindex
 export vec, union, unassigned, nnz, density
 
 # ===== Parcel functions =====
@@ -54,10 +54,6 @@ density(p::Parcel) = size(p) / length(p)
 
 Base.getindex(p::Parcel, args...) = getindex(p.membership, args...)
 
-Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
-
-Base.dotview(p::Parcel, args...) = view(p.membership, args...)
-
 
 # ===== Parcellation functions =====
 
@@ -95,8 +91,6 @@ Base.values(px::Parcellation) = values(px.parcels)
 Access a single Parcel within a Parcellation via its key of type `T`"
 """
 Base.getindex(px::Parcellation{T}, k::T) where T = px.parcels[k]
-
-Base.setindex!(px::Parcellation{T}, p::Parcel, k::T) where T = px.parcels[k] = p
 
 """
     vec(px::Parcellation)
