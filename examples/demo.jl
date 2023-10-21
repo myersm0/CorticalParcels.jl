@@ -4,27 +4,30 @@ using CorticalParcels
 using CIFTI
 using JLD
 
-# first we need to set up a surface to use (refer to CorticalSurfaces.jl for details)
+# first we need to set up a surface to use (refer to CorticalSurfaces.jl for details);
+# here we'll just do one hemisphere, the left
 data_dir = joinpath(dirname(@__FILE__), "..", "data")
 surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
 coords = temp["pointsets"]["midthickness"][L]
 mw = temp["medial wall"][L]
-triangle = temp["triangle"][L]
-hem = Hemisphere(coords, mw; triangles = triangle)
+triangle = temp["triangle"][L] # required for adjacency calculations below
+hem = Hemisphere(coords, mw; triangles = triangle) 
 hem[:neighbors] = make_adjacency_list(hem)
 hem[:A] = make_adjacency_matrix(hem)
 
 # note that the two adjacency items created above are required for many parcelwise ops
-# (particularly ones that require graph traversal such as erode!() and dilate!())
+# (particularly ones that require graph traversal such as erode!() and dilate!()),
+# though you could still do some things without them
 
-# now make a "parcel" with just a single vertex, 17344
+# given the vertex space defined in the left Hemisphere struct above,
+# now make a "parcel" within that space consisting of just a single vertex, 17344
 p1 = Parcel(hem, [17344])
 
 # make another parcel at vertex 8423 (which happens to be 30mm from the previous one)
 p2 = Parcel(hem, [8423])
 
-# grow the first parcel a couple of times, and check the size afterwards for demo ...
+# grow the first parcel a couple of times, and check the size afterwards ...
 dilate!(p1) # 6 vertices are added, so size is now 7
 @assert size(p1) == 7
 dilate!(p1) # 12 vertices are added, so size is now 19
@@ -55,8 +58,8 @@ clear!(p1′)
 # grow p2 iteratively until there's only a small margin or interstice 
 # separating it from p1:
 while sum(interstices(p1, p2)) == 0
-	dilate!(p2)
-	println("Dilated p2 to size $(size(p2))")
+	n_new_verts = dilate!(p2)
+	println("Added $n_new_verts vertices to p2 (total size: $(size(p2)))")
 end
 
 # they still don't overlap yet ...
@@ -68,30 +71,30 @@ end
 margin_vertices = findall(interstices(p1, p2))
 @assert length(margin_vertices) == 4
 
-# now make a parcellation from *copies* of these two parcels
+# now make an empty parcellation within the space of our left Hemisphere struct ...
 px = Parcellation{Int}(hem)
+
+# give it *copies* of the two parcels we were working with above
 px[1] = Parcel(p1)
 px[2] = Parcel(p2)
 
 @assert size(px) == 2 # two parcels
 
-# now combine both parcels from px into the first; the second parcel will be deleted
+# now combine parcels 1 and 2 from px; parcel 2 will be incorporated into 
+# parcel 1 (plus the 4 marginal/insterstial vertices in between) and then deleted
 merge!(px, 1, 2)
 @assert size(px) == 1 # just one parcel remains now
-
-# in the merge operation above, parcel 1 has consumed all the vertices of parcel 2, 
-# plus the 4 margin/interstitial vertices that separated them
 @assert size(px[1]) == size(p1) + size(p2) + length(margin_vertices) 
 
 # now reverse those operations and go back to the way it was a minute ago ...
-setdiff!(px[1], margin_vertices)
 setdiff!(px[1], p2)
-@assert overlap(px[1], p1) == size(px[1]) # px[1] is now identical with p1 again
+setdiff!(px[1], margin_vertices)
+@assert isequal(px[1], p1)
 
 # add a copy of parcel #2 back in
 px[2] = Parcel(p2)
 
-# add just one vertex from the interstices so that the two parcels become contiguous
+# add just one vertex from the interstices so that the two parcels become connected
 append!(px[1], margin_vertices[1])
 
 # make a new parcel p3 just for demo purposes
@@ -118,7 +121,7 @@ px
 px
 px
 
-# a few miscellaneous functions:
+# some miscellaneous functions:
 keys(px)       # get the parcel IDs (of type T) from Parcellation{T} px
 vec(px)        # turn a Parcellation{T} into a Vector{T}
 unassigned(px) # get a BitVector representing the unassigned vertices in px
