@@ -30,16 +30,21 @@ dilate!(p1) # 6 vertices are added, so size is now 7
 dilate!(p1) # 12 vertices are added, so size is now 19
 @assert size(p1) == 19
 
+# make a copy of p1 and do some various resizing
 p1′ = Parcel(p1)
 dilate!(p1′)
 erode!(p1′)
 @assert isequal(p1, p1′)
 
-# repeatedly dilate a parcel to an arbitrary size, say 500 vertices:
+# resize to an arbitrary size, say 500 vertices, by repeated dilation:
 resize!(p1′, 500)
 
 # or shrink (erode) it to 100 vertices:
 resize!(p1′, 100)
+
+# dilate it once more, but don't add more than 10 new vertices:
+dilate!(p1′; limit = 10)
+@assert size(p1′) <= 110
 
 # if you want to see which vertices belong to a parcel:
 vertices(p1′)
@@ -59,7 +64,7 @@ end
 @assert complement(p1, p2) == size(p1)
 @assert complement(p2, p1) == size(p2)
 
-# but now there's just thin margin or interstice, 4 vertices long, between them:
+# but now there's just a thin margin or interstice, 4 vertices long, between them:
 margin_vertices = findall(interstices(p1, p2))
 @assert length(margin_vertices) == 4
 
@@ -70,7 +75,7 @@ px[2] = Parcel(p2)
 
 @assert size(px) == 2 # two parcels
 
-# now combine both parcels from px; note that the latter will be deleted
+# now combine both parcels from px into the first; the second parcel will be deleted
 merge!(px, 1, 2)
 @assert size(px) == 1 # just one parcel remains now
 
