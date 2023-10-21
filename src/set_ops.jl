@@ -35,6 +35,8 @@ overlap(p::Parcel, px::Parcellation) = return sum([overlap(p, px[k]) for k in ke
 
 overlap(px::Parcellation, p::Parcel) = return overlap(p, px)
 
+overlap(x::Union{Vector{Bool}, BitVector}, p::Parcel) = overlap(p, x)
+
 function overlap(px::Parcellation)
 	counts = zeros(Int, length(px))
 	for k in keys(px)
@@ -53,6 +55,6 @@ complement(p1::Parcel, p2::Parcel) = p1.membership' * .!p2.membership
 
 complement(p::Parcel, x::Union{Vector{Bool}, BitVector}) = p.membership' * .!x
 
-
+complement(x::Union{Vector{Bool}, BitVector}, p::Parcel) = complement(p, x)
 
 
