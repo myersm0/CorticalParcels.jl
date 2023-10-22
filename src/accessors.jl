@@ -113,7 +113,7 @@ function Base.vec(px::Parcellation{T}) where T <: Real
 	return out
 end
 
-function Base.union(px::Parcellation{T}) where T <: Real
+function Base.union(px::Parcellation)
 	out = falses(length(px))
 	for k in keys(px)
 		out .|= px[k].membership
