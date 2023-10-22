@@ -62,16 +62,17 @@ while sum(interstices(p1, p2)) == 0
 	println("Added $n_new_verts vertices to p2 (total size: $(size(p2)))")
 end
 
-# they still don't overlap yet ...
+# they still don't quite overlap yet ...
 @assert overlap(p1, p2) == 0
 @assert complement(p1, p2) == size(p1)
 @assert complement(p2, p1) == size(p2)
 
-# but now there's just a thin margin or interstice, 4 vertices long, between them:
+# but there's only a thin margin or interstice, 4 vertices long, between them:
 margin_vertices = findall(interstices(p1, p2))
 @assert length(margin_vertices) == 4
 
-# now make an empty parcellation within the space of our left Hemisphere struct ...
+# now make an empty parcellation within the space of our left Hemisphere struct,
+# using keys (parcel IDs) of type Int:
 px = Parcellation{Int}(hem)
 
 # give it *copies* of the two parcels we were working with above
@@ -81,12 +82,12 @@ px[2] = Parcel(p2)
 @assert size(px) == 2 # two parcels
 
 # now combine parcels 1 and 2 from px; parcel 2 will be incorporated into 
-# parcel 1 (plus the 4 marginal/insterstial vertices in between) and then deleted
+# parcel 1, along with the 4 interstitial vertices in between, and then deleted
 merge!(px, 1, 2)
 @assert size(px) == 1 # just one parcel remains now
 @assert size(px[1]) == size(p1) + size(p2) + length(margin_vertices) 
 
-# now reverse those operations and go back to the way it was a minute ago ...
+# now reverse those operations and go back to the way it was a minute ago
 setdiff!(px[1], p2)
 setdiff!(px[1], margin_vertices)
 @assert isequal(px[1], p1)
@@ -99,14 +100,14 @@ append!(px[1], margin_vertices[1])
 
 # make a new parcel p3 just for demo purposes
 p3 = Parcel(px[1])
-union!(p3, p2)
+union!(p3, p2) # combine p3 and p2
 @assert size(p3) == 1 + size(p1) + size(p2)
 
 # now p3 has all the vertices from p1, all the vertices from p2,
 # plus one vertex linking those two regions; we can cut that vertex
 # (an articulation point or cut vertex in graph theory terms) and then
 # get back the two resulting connected components, i.e. recover the 
-# two original parcels p1 and p2:
+# two original parcels p1 and p2 though not necessarily in the same order:
 orig_parcels = cut(p3)
 @assert isequal(orig_parcels[1], p2)
 @assert overlap(orig_parcels[2], p1) == size(p1) - 1
@@ -127,7 +128,7 @@ vec(px)        # turn a Parcellation{T} into a Vector{T}
 unassigned(px) # get a BitVector representing the unassigned vertices in px
 union(px)      # collapse all Parcels within px to a single BitVector
 nnz(px)        # the number of vertices in px that have parcel membership
-length(px)     # the length of a px's vector space representation
+length(px)     # the length of px's vector space representation
 density(px)    # proportion of assigned verices: nnz(px) / length(px)
 
 
