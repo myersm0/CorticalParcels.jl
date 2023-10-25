@@ -88,6 +88,8 @@ end
 	px[2] = Parcel(p2)
 	@test size(px) == 2
 
+	@test_throws ErrorException px[2] = Parcel(Hemisphere(9999))
+
 	merge!(px, 1, 2)
 	@test size(px) == 1 # just one parcel remains now
 	@test size(px[1]) == size(p1) + size(p2) + length(margin_vertices) 

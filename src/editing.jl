@@ -6,7 +6,10 @@ Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 
 Base.dotview(p::Parcel, args...) = view(p.membership, args...)
 
-Base.setindex!(px::Parcellation{T}, p::Parcel, k::T) where T = px.parcels[k] = p
+function Base.setindex!(px::Parcellation{T}, p::Parcel, k::T) where T
+	p.surface == px.surface || error("Surface incompatibility")
+	px.parcels[k] = p
+end
  
 function Graphs.Graph(p::Parcel, A::AdjacencyMatrix)
 	verts = vertices(p)
