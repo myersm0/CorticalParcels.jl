@@ -33,8 +33,25 @@ function cut(p::Parcel, A::AdjacencyMatrix)
 end
 
 function cut(p::Parcel)
-	haskey(p.surface, :A) || error("Operation requires adjacency matrix `A`")
+	haskey(p.surface, :A) || error("Operation requires adjacency matrix `:A`")
 	return cut(p, p.surface[:A])
+end
+
+# TODO: this function is almost exactly the same as cut(p); not sure how to
+# refactor though without type piracy
+"""
+	 split(p, v)
+
+Remove vertices `v` from a graph representation of a `Parcel`, and return
+a new set of `Parcel`s: one for each connected component remaining
+"""
+function Base.split(p::Parcel, v::Vector{Int})
+	haskey(p.surface, :A) || error("Operation requires adjacency matrix `:A`")
+	g = Graphs.Graph(p, p.surface[:A])
+	Graphs.rem_vertices!(g, v)
+	clusters = filter(x -> length(x) > 1, Graphs.connected_components(g))
+	new_parcels = [Parcel(p.surface, c) for c in clusters]
+	return new_parcels
 end
 
 """
@@ -97,5 +114,4 @@ function Base.merge!(px::Parcellation{T}, k1::T, k2::T) where T
 	haskey(px.surface, :A) || error("Operation requires adjacency matrix `A`")
 	return merge!(px, k1, k2, px.surface[:A])
 end
-
 
