@@ -1,6 +1,6 @@
 
 import Graphs
-export setindex!, cut, clear!, delete!, append!, merge!
+export setindex!, cut, split, clear!, delete!, append!, merge!
 
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 
