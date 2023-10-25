@@ -33,7 +33,7 @@ function cut(p::Parcel, A::AdjacencyMatrix)
 end
 
 function cut(p::Parcel)
-	haskey(p.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
+	haskey(p.surface, :A) || error("Operation requires adjacency matrix `A`")
 	return cut(p, p.surface[:A])
 end
 
@@ -74,7 +74,7 @@ function Base.merge!(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
 end
 
 function Base.merge!(p1::Parcel, p2::Parcel)
-	haskey(p1.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
+	haskey(p1.surface, :A) || error("Operation requires adjacency matrix `A`")
 	p1.surface == p2.surface || error("Surfaces must be the same for both parcels")
 	return merge!(p1, p2, p1.surface[:A])
 end
@@ -94,7 +94,7 @@ function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) wher
 end
 
 function Base.merge!(px::Parcellation{T}, k1::T, k2::T) where T
-	haskey(px.surface.appendix, :A) || error("Operation requires adjacency matrix `A`")
+	haskey(px.surface, :A) || error("Operation requires adjacency matrix `A`")
 	return merge!(px, k1, k2, px.surface[:A])
 end
 

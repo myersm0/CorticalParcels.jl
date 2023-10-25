@@ -10,9 +10,9 @@ surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
 coords = temp["pointsets"]["midthickness"][L]
 mw = temp["medial wall"][L]
-triangle = temp["triangle"][L] # required for adjacency     calculations below
+triangle = temp["triangle"][L] # required for adjacency calculations below
 hem = Hemisphere(coords, mw; triangles = triangle)
-hem[:neighbors] = temp["adjacency list"]
+hem[:neighbors] = make_adjacency_list(hem)
 hem[:A] = make_adjacency_matrix(hem)
 
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
