@@ -1,6 +1,6 @@
 
 import Graphs
-export setindex!, cut, clear!, append!, merge!
+export setindex!, cut, clear!, delete!, append!, merge!
 
 Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 
@@ -45,6 +45,13 @@ Zero-out all membership vertices of a `Parcel`
 clear!(p::Parcel) = p.membership .*= false
 
 """
+    delete!(px, k)
+
+Delete `Parcel` with ID `k` from a `Parcellation`
+"""
+Base.delete!(px::Parcellation{T}, k::T) where T = delete!(px.parcels, k)
+
+"""
     append!(p, v)
 
 Add vertex `v::Int` to the `p`'s membership vector
@@ -82,7 +89,7 @@ function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) wher
 	p1 = px[k1]
 	p2 = px[k2]
 	merge!(p1, p2, A)
-	delete!(px.parcels, k2)
+	delete!(px, k2)
 	return size(p1)
 end
 

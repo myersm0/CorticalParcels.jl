@@ -107,6 +107,10 @@ end
 	@test isequal(orig_parcels[1], p2)
 	@test overlap(orig_parcels[2], p1) == size(p1) - 1
 
+	delete!(px, 1)
+	delete!(px, 2)
+	@test size(px) == 0
+
 	# load in a real parcellation form a CIFTI file:
 	parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 	temp = CIFTI.load(parcel_file)
