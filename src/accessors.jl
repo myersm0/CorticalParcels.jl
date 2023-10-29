@@ -60,9 +60,8 @@ Base.isequal(p1::Parcel, p2::Parcel) =
 Base.isequal(p1::Parcel, x::BitVector) = 
 	p1.membership == p2.membership
 
-membership(p::Parcel) = p.membership
-
-surface(p::Parcel) = p.surface
+Base.:(==)(p1::Parcel, p2::Parcel) = isequal(p1, p2)
+Base.:(==)(p1::Parcel, x::BitVector) = isequal(p1, p2)
 
 # ===== Parcellation functions =====
 
@@ -92,7 +91,7 @@ Base.keys(px::Parcellation) = keys(px.parcels)
 
 Check whether `Parcellation{T} px` contains a parcel with key value `k`
 """
-Base.haskey(px::Parcellation) = haskey(px.parcels, k)
+Base.haskey(px::Parcellation{T}, k::T) where T = haskey(px.parcels, k)
 
 """
     values(px::Parcellation)
@@ -154,5 +153,9 @@ relative to the total number of vertices in its surface representation
 """
 density(px::Parcellation) = nnz(px) / length(px)
 
-surface(px::Parcellation) = px.surface
+function Base.:(==)(px1::Parcellation, px2::Parcellation)
+	px1.surface == px2.surface || return false
+	all([haskey(px2, k) && px1[k] == px2[k] for k in keys(px1)]) || return false
+	return true
+end
 

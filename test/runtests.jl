@@ -30,6 +30,9 @@ types_to_test = [UInt16, Int64]
 		@test sum(parcel_sizes) == sum(cifti_data[L] .!= 0)
 		parcel_vertices = [vertices(px[p]) for p in keys(px)]
 		@test all(length.(parcel_vertices) == parcel_sizes)
+		px′ = deepcopy(px)
+		@test px′.surface === px.surface
+		@test px′ == px
 	end
 
 	# things should work with arbitrary non-numeric types of T as well; test this
@@ -50,7 +53,7 @@ end
 	@test dilate!(p1) == 6
 	@test dilate!(p1) == 12
 
-	p1′ = Parcel(p1)
+	p1′ = deepcopy(p1)
 	dilate!(p1′)
 	erode!(p1′)
 	@test isequal(p1, p1′)
@@ -65,7 +68,7 @@ end
 	clear!(p1′)
 	@test size(p1′) == 0
 
-	p1′ = Parcel(p1)
+	p1′ = deepcopy(p1)
 	limits = [0, 1, 3, 5, 10, 20, 30]
 	limits = [limits; reverse(limits)]
 	for limit in limits
@@ -84,8 +87,8 @@ end
 	@test length(margin_vertices) == 3
 
 	px = Parcellation{Int}(hem)
-	px[1] = Parcel(p1)
-	px[2] = Parcel(p2)
+	px[1] = deepcopy(p1)
+	px[2] = deepcopy(p2)
 	@test size(px) == 2
 
 	@test_throws ErrorException px[2] = Parcel(Hemisphere(9999))
@@ -98,10 +101,10 @@ end
 	setdiff!(px[1], margin_vertices)
 	@test isequal(px[1], p1)
 
-	px[2] = Parcel(p2)
+	px[2] = deepcopy(p2)
 	append!(px[1], margin_vertices[1])
 
-	p3 = Parcel(px[1])
+	p3 = deepcopy(px[1])
 	union!(p3, p2)
 	@test size(p3) == 1 + size(p1) + size(p2)
 
@@ -122,6 +125,4 @@ end
 	@test sum(unassigned(px)) == 8428
 	@test sum(nnz(px)) == length(px) - sum(unassigned(px)) == sum(union(px))
 end
-
-
 
