@@ -81,7 +81,7 @@ end
 	@test complement(p2, p1) == size(p2)
 
 	margin_vertices = findall(interstices(p1, p2))
-	@test length(margin_vertices) == 4
+	@test length(margin_vertices) == 3
 
 	px = Parcellation{Int}(hem)
 	px[1] = Parcel(p1)

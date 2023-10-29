@@ -60,6 +60,9 @@ Base.isequal(p1::Parcel, p2::Parcel) =
 Base.isequal(p1::Parcel, x::BitVector) = 
 	p1.membership == p2.membership
 
+membership(p::Parcel) = p.membership
+
+surface(p::Parcel) = p.surface
 
 # ===== Parcellation functions =====
 
@@ -143,4 +146,6 @@ Get the proportion of assigned parcel vertices of a `Parcellation`
 relative to the total number of vertices in its surface representation
 """
 density(px::Parcellation) = nnz(px) / length(px)
+
+surface(px::Parcellation) = px.surface
 

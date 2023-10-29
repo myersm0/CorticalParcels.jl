@@ -121,12 +121,13 @@ Base.resize!(p::Parcel, desired_size::Int) =
 
 Find the vertices lying in the boundaries between two `Parcel`s
 """
-function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
+function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)::BitVector
 	p1′ = dilate(p1, A)
 	p2′ = dilate(p2, A)
 	setdiff!(p1′, p1)
 	setdiff!(p2′, p2)
-	return intersect(p1′, p2′)
+	temp = intersect(p1′, p2′)
+	return temp .& Iterators.flatten(sum(A[:, union(p1, p2)]; dims = 2) .> 2)
 end
 
 interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p1.surface[:A])
