@@ -82,7 +82,7 @@ px[2] = Parcel(p2)
 @assert size(px) == 2 # two parcels
 
 # now combine parcels 1 and 2 from px; parcel 2 will be incorporated into 
-# parcel 1, along with the 4 interstitial vertices in between, and then deleted
+# parcel 1, along with the 3 interstitial vertices in between, and then deleted
 merge!(px, 1, 2)
 @assert size(px) == 1 # just one parcel remains now
 @assert size(px[1]) == size(p1) + size(p2) + length(margin_vertices) 
