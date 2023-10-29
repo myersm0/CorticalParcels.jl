@@ -1,6 +1,6 @@
 
 import CorticalSurfaces: vertices
-export vertices, size, length, keys, values, getindex
+export vertices, size, length, keys, haskey, values, getindex
 export vec, union, unassigned, nnz, density
 
 # ===== Parcel functions =====
@@ -86,6 +86,13 @@ Base.length(px::Parcellation) = size(px.surface)
 Get the IDs of all `Parcel`s within a `Parcellation`
 """
 Base.keys(px::Parcellation) = keys(px.parcels)
+
+"""
+	 haskey(px::Parcellation{T}, k::T)
+
+Check whether `Parcellation{T} px` contains a parcel with key value `k`
+"""
+Base.haskey(px::Parcellation) = haskey(px.parcels, k)
 
 """
     values(px::Parcellation)
