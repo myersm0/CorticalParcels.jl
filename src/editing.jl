@@ -118,3 +118,25 @@ function Base.merge!(px::Parcellation{T}, k1::T, k2::T) where T
 	return merge!(px, k1, k2, px.surface[:A])
 end
 
+"""
+    deepcopy(p::Parcel)
+
+Make a new `Parcel` containing a `deepcopy` of original parcel `p`'s `membership` vector. Note however that the surface remains just a reference and is not itself copied, since it may be a large object.
+"""
+function Base.deepcopy(p::Parcel) where T
+	return Parcel(p)
+end
+
+"""
+    deepcopy(px::Parcellation)
+
+Make a new `Parcellation` containing a `deepcopy` of all parcels from `px`. Note however that, as with `deepcopy(p::Parcel)`, the surface remains just a reference and is not itself copied, since it may be a large object.
+"""
+function Base.deepcopy(px::Parcellation{T}) where T
+	px′ = Parcellation{T}(px.surface)
+	for k in keys(px)
+		px′[k] = deepcopy(px[k])
+	end
+	return px′
+end
+
