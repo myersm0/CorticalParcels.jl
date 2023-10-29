@@ -150,7 +150,7 @@ function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 	)
 
 	# from all unique parcel-parcel pairs discovered from the above,
-	# make a dict in which to store their interstitial vertices
+	# make a dict in which to store their interstitial vertices, if any
 	result = Dict{Tuple{T, T}, BitVector}()
 	for parcel_list in status
 		for x in parcel_list
@@ -158,7 +158,9 @@ function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 				a = min(x, y)
 				b = max(x, y)
 				haskey(result, (a, b)) && continue
-				result[(a, b)] = interstices(px[a], px[b], A)
+				i = interstices(px[a], px[b], A)
+				sum(i) > 0 || continue
+				result[(a, b)] = i
 			end
 		end
 	end
