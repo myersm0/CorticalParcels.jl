@@ -154,7 +154,7 @@ function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 	result = Dict{Tuple{T, T}, BitVector}()
 	for parcel_list in status
 		for x in parcel_list
-			Threads.@threads for y in setdiff(parcel_list, x)
+			for y in setdiff(parcel_list, x)
 				a = min(x, y)
 				b = max(x, y)
 				haskey(result, (a, b)) && continue
