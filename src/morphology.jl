@@ -121,6 +121,7 @@ Base.resize!(p::Parcel, desired_size::Int) =
 
 Find the vertices lying in the boundaries between two `Parcel`s
 """
+
 function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)::BitVector
 	p1′ = dilate(p1, A)
 	p2′ = dilate(p2, A)
@@ -141,12 +142,12 @@ separated by a 1-vertex-wide gap, the vertices in that interstitial region
 function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 	v = vec(px)
 	u = unassigned(px)
-	temp = @view A[u, :]
+	temp = @view A[:, u]
 
 	# find all unassigned vertices that have 2 or more parcels as neighbors
 	status = filter(
 		x -> length(x) >= 2,
-		ThreadsX.map(x -> sort(setdiff(v[x], 0)), eachrow(temp))
+		ThreadsX.map(x -> sort(setdiff(v[x], 0)), eachcol(temp))
 	)
 
 	# from all unique parcel-parcel pairs discovered from the above,
