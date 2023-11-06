@@ -159,7 +159,7 @@ function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 				a = min(x, y)
 				b = max(x, y)
 				haskey(result, (a, b)) && continue
-				i = interstices(px[a], px[b], A)
+				i = interstices(px[a], px[b], A) .& u
 				any(i) || continue
 				result[(a, b)] = i
 			end
