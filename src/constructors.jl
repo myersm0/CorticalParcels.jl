@@ -48,11 +48,11 @@ end
 # ===== Parcellation constructors =====
 
 """
-    Parcellation{T}(surface::SurfaceSpace, x::AbstractVector)
+    BilateralParcellation{T}(surface::Hemisphere, x::AbstractVector)
 
-Create a `Parcellation` from a `Vector` `x`, the length of which should match the size
-of the surface space being supplied. The distinct elements of that `Vector` will 
-become the `Parcels` of the resulting `Parcellation` struct. Parcels will be keyed 
+Create a `BilateralParcellation` from a `Vector` `x`, the length of which should match 
+the size of the surface space being supplied. The distinct elements of that `Vector` 
+will become the `Parcels` of the resulting `Parcellation` struct. Parcels will be keyed 
 by IDs of type `T`; therefore the eltype of the `Vector` you supply must be
 coercable to `T`.
 """
@@ -82,37 +82,37 @@ function HemisphericParcellation{T}(surface::Hemisphere, x::AbstractVector) wher
 	end
 	return HemisphericParcellation{T}(
 		surface,
-		Dict(
-			[p => Parcel(surface, findall(x .== p)) for p in setdiff(x, 0)]
-		)
+		Dict(p => Parcel(surface, findall(x .== p)) for p in setdiff(x, 0))
 	)
 end
 
 """
-    Parcellation{T}(surface::SurfaceSpace, x::AbstractMatrix)
+    BilateralParcellation{T}(surface::CorticalSurface, x::AbstractMatrix)
 
-Create a `Parcellation` from a single-column `Matrix` `x`
+Create a `BilateralParcellation` from a single-column `Matrix` `x`
 """
 function BilateralParcellation{T}(surface::SurfaceSpace, x::AbstractMatrix) where T
-	size(x, 2) == 1 || error("For Matrix input, column dimension must be singleton")
+	size(x, 2) == 1 || error("For matrix input, column dimension must be singleton")
 	BilateralParcellation{T}(surface, x[:])
 end
 
 """
-    Parcellation{T}(surface::SurfaceSpace)
+    BilateralParcellation{T}(surface::CorticalSurface)
 
-Create an empty `Parcellation`
+Create an empty `BilateralParcellation`
 """
-function BilateralParcellation{T}(surface::SurfaceSpace) where T
+function BilateralParcellation{T}(surface::CorticalSurface) where T
 	return BilateralParcellation{T}(
 		surface, 
-		Dict(
-			hem => HemisphericParcellation{T}(surface[hem])
-			for hem in LR
-		)
+		Dict(hem => HemisphericParcellation{T}(surface[hem]) for hem in LR)
 	)
 end
 
+"""
+    HemisphericParcellation{T}(surface::Hemisphere)
+
+Create an empty `HemisphericParcellation`
+"""
 function HemisphericParcellation{T}(surface::SurfaceSpace) where T
 	return HemisphericParcellation{T}(surface, Dict{T, Parcel}())
 end
