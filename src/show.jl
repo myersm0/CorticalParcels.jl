@@ -12,10 +12,10 @@ function Base.show(
 	print(io, " ($dens% dense)")
 end
 
-function Base.show(io::IO, mime::MIME"text/plain", px::Parcellation)
+function Base.show(io::IO, mime::MIME"text/plain", px::HemisphericParcellation)
 	ks = @chain keys(px) collect sample(_, size(px); replace = false)
 	dens = Int(round(density(px) * 100; digits = 0))
-	print(io, "Parcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
+	print(io, "HemisphericParcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
 	print(io, " $dens% dense,")
 	print(io, " in a space of $(size(px.surface)) vertices")
 	print(io, "\n")
@@ -33,8 +33,10 @@ function Base.show(io::IO, mime::MIME"text/plain", px::Parcellation)
 	end
 end
 
-function Base.show(io::IO, mime::MIME"text/plain", pxs::Vector{Parcellation{T}}) where T
-	print(io, "Vector of $(length(pxs)) Parcellations with keys of type $T")
+function Base.show(
+		io::IO, mime::MIME"text/plain", pxs::Vector{HemisphericParcellation{T}}
+	) where T
+	print(io, "Vector of $(length(pxs)) HemisphericParcellations with keys of type $T")
 end
 
 
