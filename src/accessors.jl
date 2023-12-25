@@ -70,42 +70,48 @@ Base.:(==)(p1::Parcel, x::BitVector) = isequal(p1, p2)
 
 Get the number of Parcels comprising a Parcellation
 """
-Base.size(px::Parcellation) = length(px.parcels)
+Base.size(px::HemisphericParcellation) = length(px.parcels)
+
+Base.size(px::BilateralParcellation) = size(px[L]) + size(px[R])
 
 """
     length(px::Parcellation)
 
 Get the number of vertices comprising the representation space of a `Parcellation`
 """
-Base.length(px::Parcellation) = size(px.surface)
+Base.length(px::AbstractParcellation) = size(px.surface)
 
 """
     keys(px::Parcellation)
 
 Get the IDs of all `Parcel`s within a `Parcellation`
 """
-Base.keys(px::Parcellation) = keys(px.parcels)
+Base.keys(px::HemisphericParcellation) = keys(px.parcels)
+
+# TODO: keys(::BilateralParcellation)?
 
 """
 	 haskey(px::Parcellation{T}, k::T)
 
 Check whether `Parcellation{T} px` contains a parcel with key value `k`
 """
-Base.haskey(px::Parcellation{T}, k::T) where T = haskey(px.parcels, k)
+Base.haskey(px::HemisphericParcellation{T}, k::T) where T = haskey(px.parcels, k)
 
 """
     values(px::Parcellation)
 
 Access the `Parcel`s in a `Parcellation`
 """
-Base.values(px::Parcellation) = values(px.parcels)
+Base.values(px::HemisphericParcellation) = values(px.parcels)
 
 """
     getindex(px::Parcellation{T}, k::T)
 
 Access a single Parcel within a Parcellation via its key of type `T`"
 """
-Base.getindex(px::Parcellation{T}, k::T) where T = px.parcels[k]
+Base.getindex(px::HemisphericParcellation{T}, k::T) where T = px.parcels[k]
+
+Base.getindex(px::BilateralParcellation, b::BrainStructure) = px.parcels[b]
 
 """
     vec(px::Parcellation)
@@ -114,7 +120,7 @@ Convert a `Parcellation` from its internal `Dict`-based representation into a `V
 `T` must have a `zeros(T, ...)` method. Warning: this is not a sensible representation
 in the event that any `Parcel`s overlap.
 """
-function Base.vec(px::Parcellation{T}) where T <: Real
+function Base.vec(px::HemisphericParcellation{T}) where T <: Real
 	out = zeros(T, length(px))
 	for k in keys(px)
 		@inbounds out[vertices(px[k])] .= k
@@ -122,7 +128,7 @@ function Base.vec(px::Parcellation{T}) where T <: Real
 	return out
 end
 
-function Base.union(px::Parcellation)
+function Base.union(px::HemisphericParcellation)
 	out = falses(length(px))
 	for k in keys(px)
 		out .|= px[k].membership
@@ -135,7 +141,7 @@ end
 
 Get a `BitVector` identifying unassigned vertices (`1`) in a `Parcellation`
 """
-unassigned(px::Parcellation) = .!union(px)
+unassigned(px::HemisphericParcellation) = .!union(px)
 
 """
     nnz(px::Parcellation)
@@ -143,7 +149,7 @@ unassigned(px::Parcellation) = .!union(px)
 Get the number of vertices within a `Parcellation` that are assigned
 to at least one `Parcel`
 """
-nnz(px::Parcellation) = sum(union(px))
+nnz(px::HemisphericParcellation) = sum(union(px))
 
 """
     density(px::Parcellation)
@@ -151,9 +157,9 @@ nnz(px::Parcellation) = sum(union(px))
 Get the proportion of assigned parcel vertices of a `Parcellation`
 relative to the total number of vertices in its surface representation
 """
-density(px::Parcellation) = nnz(px) / length(px)
+density(px::HemisphericParcellation) = nnz(px) / length(px)
 
-function Base.:(==)(px1::Parcellation, px2::Parcellation)
+function Base.:(==)(px1::HemisphericParcellation, px2::HemisphericParcellation)
 	px1.surface == px2.surface || return false
 	all([haskey(px2, k) && px1[k] == px2[k] for k in keys(px1)]) || return false
 	return true

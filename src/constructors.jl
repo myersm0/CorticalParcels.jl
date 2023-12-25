@@ -7,22 +7,22 @@
 Make an empty `Parcel` where `surface` dictates the length of the representational space
 """
 function Parcel(surface::Hemisphere)
-	return Parcel{typeof(surface)}(surface, falses(size(surface)))
+	return Parcel(surface, falses(size(hem)))
 end
 
 """
-	 Parcel(surface, verts)
+	 Parcel(hem, verts)
 
 Make a `Parcel`, given its vertex indices
 """
 function Parcel(surface::Hemisphere, verts::Vector{Int})
 	membership = falses(size(surface))
 	membership[verts] .= true
-	return Parcel{typeof(surface)}(surface, membership)
+	return Parcel(surface, membership)
 end
 
 """
-    Parcel(surface, coords, tree)
+    Parcel(hem, coords, tree)
 
 Given a `Matrix` of arbitrary x, y, z coordinates and a `KDTree` representing the 
 positions of defined cortical vertex indices, make a `Parcel` by mapping those 
@@ -32,8 +32,7 @@ function Parcel(surface::Hemisphere, coords::AbstractMatrix, tree::KDTree)
 	inds, dists = knn(tree, coords, 1)
 	inds = [x[1] for x in inds] # flatten result to just a vector
 	nverts = size(surface)
-	all(inds .> 0) || return Parcel(surface)
-	return Parcel(surface, inds)
+	return all(inds .> 0) ? Parcel(surface, inds) : Parcel(surface)
 end
 
 """
@@ -57,15 +56,31 @@ become the `Parcels` of the resulting `Parcellation` struct. Parcels will be key
 by IDs of type `T`; therefore the eltype of the `Vector` you supply must be
 coercable to `T`.
 """
-function Parcellation{T}(surface::SurfaceSpace, x::AbstractVector) where T
+function BilateralParcellation{T}(surface::CorticalSurface, x::AbstractVector) where T
 	nverts = size(surface)
 	input_size = length(x)
 	if input_size != nverts
-		input_size == size(surface, Exclusive()) ||
-			error("Input Vector doesn't match size of the supplied surface")
+		input_size == size(surface, Exclusive()) || error(DimensionMismatch)
 		x = pad(x, surface)
 	end
-	return Parcellation{T}(
+	parcels = Dict{BrainStructure, HemisphericParcellation{T}}()
+	for hem in LR
+		verts = vertices(surface[hem], Bilateral(), Inclusive())
+		parcels[hem] = HemisphericParcellation{T}(surface[hem], x[verts])
+	end
+	length(instersect(keys(parcels[L]), keys(parcels[R]))) == 0 ||
+		error("Found parcels with membership spanning hemispheres; this is not supported")
+	return BilateralParcellation{T}(surface, parcels)
+end
+
+function HemisphericParcellation{T}(surface::Hemisphere, x::AbstractVector) where T
+	nverts = size(surface)
+	input_size = length(x)
+	if input_size != nverts
+		input_size == size(surface, Exclusive()) || error(DimensionMismatch)
+		x = pad(x, surface)
+	end
+	return HemisphericParcellation{T}(
 		surface,
 		Dict(
 			[p => Parcel(surface, findall(x .== p)) for p in setdiff(x, 0)]
@@ -78,9 +93,9 @@ end
 
 Create a `Parcellation` from a single-column `Matrix` `x`
 """
-function Parcellation{T}(surface::SurfaceSpace, x::AbstractMatrix) where T
+function BilateralParcellation{T}(surface::SurfaceSpace, x::AbstractMatrix) where T
 	size(x, 2) == 1 || error("For Matrix input, column dimension must be singleton")
-	Parcellation{T}(surface, x[:])
+	BilateralParcellation{T}(surface, x[:])
 end
 
 """
@@ -88,7 +103,17 @@ end
 
 Create an empty `Parcellation`
 """
-function Parcellation{T}(surface::SurfaceSpace) where T
-	Parcellation{T}(surface, Dict{T, Parcel}())
+function BilateralParcellation{T}(surface::SurfaceSpace) where T
+	return BilateralParcellation{T}(
+		surface, 
+		Dict(
+			hem => HemisphericParcellation{T}(surface[hem])
+			for hem in LR
+		)
+	)
+end
+
+function HemisphericParcellation{T}(surface::SurfaceSpace) where T
+	return HemisphericParcellation{T}(surface, Dict{T, Parcel}())
 end
 
