@@ -139,7 +139,7 @@ interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p1.surface[:A])
 Iterate through a `Parcellation` and find, for each pair of neighboring `Parcel`s 
 separated by a 1-vertex-wide gap, the vertices in that interstitial region
 """
-function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
+function interstices(px::HemisphericParcellation{T}, A::AdjacencyMatrix) where T
 	v = vec(px)
 	u = unassigned(px)
 	temp = @view A[:, u]
@@ -168,6 +168,6 @@ function interstices(px::Parcellation{T}, A::AdjacencyMatrix) where T
 	return result
 end
 
-interstices(px::Parcellation) = interstices(px, px.surface[:A])
+interstices(px::HemisphericParcellation) = interstices(px, px.surface[:A])
 
 
