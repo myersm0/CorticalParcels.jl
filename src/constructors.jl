@@ -97,6 +97,16 @@ function BilateralParcellation{T}(surface::SurfaceSpace, x::AbstractMatrix) wher
 end
 
 """
+    HemisphericParcellation{T}(surface::Hemisphere, x::AbstractMatrix)
+
+Create a `HemisphericParcellation` from a single-column `Matrix` `x`
+"""
+function HemisphericParcellation{T}(surface::Hemisphere, x::AbstractMatrix) where T
+	size(x, 2) == 1 || error("For matrix input, column dimension must be singleton")
+	HemisphericParcellation{T}(surface, x[:])
+end
+
+"""
     BilateralParcellation{T}(surface::CorticalSurface)
 
 Create an empty `BilateralParcellation`
