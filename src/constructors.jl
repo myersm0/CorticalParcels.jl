@@ -7,7 +7,7 @@
 Make an empty `Parcel` where `surface` dictates the length of the representational space
 """
 function Parcel(surface::Hemisphere)
-	return Parcel(surface, falses(size(hem)))
+	return Parcel(surface, falses(size(surface)))
 end
 
 """
