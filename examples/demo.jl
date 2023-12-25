@@ -67,9 +67,9 @@ end
 @assert complement(p1, p2) == size(p1)
 @assert complement(p2, p1) == size(p2)
 
-# but there's only a thin margin or interstice, 4 vertices long, between them:
+# but there's only a thin margin or interstice, 3 vertices long, between them:
 margin_vertices = findall(interstices(p1, p2))
-@assert length(margin_vertices) == 4
+@assert length(margin_vertices) == 3
 
 # now make an empty parcellation within the space of our left Hemisphere struct,
 # using keys (parcel IDs) of type Int:
