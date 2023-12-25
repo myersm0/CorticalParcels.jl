@@ -133,7 +133,7 @@ end
 Make a new `Parcellation` containing a `deepcopy` of all parcels from `px`. Note however that, as with `deepcopy(p::Parcel)`, the surface remains just a reference and is not itself copied, since it may be a large object.
 """
 function Base.deepcopy(px::HemisphericParcellation{T}) where T
-	px′ = Parcellation{T}(px.surface)
+	px′ = HemisphericParcellation{T}(px.surface)
 	for k in keys(px)
 		px′[k] = deepcopy(px[k])
 	end
