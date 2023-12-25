@@ -22,7 +22,7 @@ types_to_test = [UInt16, Int64]
 
 @testset "CorticalParcels.jl" begin
 	for dtype in types_to_test
-		px = Parcellation{dtype}(hem, cifti_data[L])
+		px = HemisphericParcellation{dtype}(hem, cifti_data[L])
 		@test size(px) == length(setdiff(cifti_data[L], 0))
 		@test length(px) == 32492
 		@test all(trim(vec(px), hem) .== cifti_data[L])
@@ -40,7 +40,7 @@ types_to_test = [UInt16, Int64]
 	inds = [9, 99, 999, 9999]
 	temp = fill("unassigned", 32492)
 	temp[inds] .= "test"
-	px = Parcellation{dtype}(hem, temp)
+	px = HemisphericParcellation{dtype}(hem, temp)
 	@test size(px["test"]) == 4
 	@test size(px["unassigned"]) == 32492 - 4
 	# `vec(px)` is not possible however because we can only do this where T <: Real:
@@ -86,7 +86,7 @@ end
 	margin_vertices = findall(interstices(p1, p2))
 	@test length(margin_vertices) == 3
 
-	px = Parcellation{Int}(hem)
+	px = HemisphericParcellation{Int}(hem)
 	px[1] = deepcopy(p1)
 	px[2] = deepcopy(p2)
 	@test size(px) == 2
@@ -119,7 +119,7 @@ end
 	# load in a real parcellation form a CIFTI file:
 	parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 	temp = CIFTI.load(parcel_file)
-	px = Parcellation{Int}(hem, temp[L]) # just use left hem for demo
+	px = HemisphericParcellation{Int}(hem, temp[L]) # just use left hem for demo
 	@test length(keys(px)) == 185
 	@test density(px) ≈ 0.740613073987443
 	@test sum(unassigned(px)) == 8428

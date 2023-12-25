@@ -1,5 +1,5 @@
 
-export Parcel, Parcellation
+export Parcel, HemisphericParcellation, BilateralParcellation
 
 struct Parcel
 	surface::Hemisphere
