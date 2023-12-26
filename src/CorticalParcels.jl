@@ -14,7 +14,7 @@ using ThreadsX
 import CorticalSurfaces: AdjacencyList, AdjacencyMatrix, DistanceMatrix
 
 include("types.jl")
-export Parcel, HemisphericParcellation, BilateralParcellation
+export Parcel, AbstractParcellation, HemisphericParcellation, BilateralParcellation
 
 include("constructors.jl")
 
