@@ -128,6 +128,10 @@ function Base.vec(px::HemisphericParcellation{T}) where T <: Real
 	return out
 end
 
+function Base.vec(px::BilateralParcellation{T}) where T <: Real
+	return vcat(vec(px[L]), vec(px[R]))
+end
+
 function Base.union(px::HemisphericParcellation)
 	out = falses(length(px))
 	for k in keys(px)
