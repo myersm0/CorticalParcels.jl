@@ -8,12 +8,18 @@ using CIFTI
 data_dir = joinpath(dirname(@__FILE__), "..", "data")
 surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
-coords = temp["pointsets"]["midthickness"][L]
-mw = temp["medial wall"][L]
-triangle = temp["triangle"][L] # required for adjacency calculations below
-hem = Hemisphere(coords, mw; triangles = triangle)
-hem[:neighbors] = make_adjacency_list(hem)
-hem[:A] = make_adjacency_matrix(hem)
+hems = Dict()
+for hem in LR
+	coords = temp["pointsets"]["midthickness"][hem]
+	mw = temp["medial wall"][hem]
+	triangles = temp["triangle"][hem] # required for adjacency calculations below
+	hems[hem] = Hemisphere(coords, mw; triangles = triangles)
+	hems[hem][:neighbors] = make_adjacency_list(hems[hem])
+	hems[hem][:A] = make_adjacency_matrix(hems[hem])
+end
+
+c = CorticalSurface(hems[L], hems[R])
+hem = c[L] # for most of these tests below we'll just deal with left hem for now
 
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 cifti_data = CIFTI.load(parcel_file)
@@ -22,7 +28,7 @@ types_to_test = [UInt16, Int64]
 
 @testset "CorticalParcels.jl" begin
 	for dtype in types_to_test
-		px = Parcellation{dtype}(hem, cifti_data[L])
+		px = HemisphericParcellation{dtype}(hem, cifti_data[L])
 		@test size(px) == length(setdiff(cifti_data[L], 0))
 		@test length(px) == 32492
 		@test all(trim(vec(px), hem) .== cifti_data[L])
@@ -40,7 +46,7 @@ types_to_test = [UInt16, Int64]
 	inds = [9, 99, 999, 9999]
 	temp = fill("unassigned", 32492)
 	temp[inds] .= "test"
-	px = Parcellation{dtype}(hem, temp)
+	px = HemisphericParcellation{dtype}(hem, temp)
 	@test size(px["test"]) == 4
 	@test size(px["unassigned"]) == 32492 - 4
 	# `vec(px)` is not possible however because we can only do this where T <: Real:
@@ -86,7 +92,7 @@ end
 	margin_vertices = findall(interstices(p1, p2))
 	@test length(margin_vertices) == 3
 
-	px = Parcellation{Int}(hem)
+	px = HemisphericParcellation{Int}(hem)
 	px[1] = deepcopy(p1)
 	px[2] = deepcopy(p2)
 	@test size(px) == 2
@@ -119,10 +125,14 @@ end
 	# load in a real parcellation form a CIFTI file:
 	parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 	temp = CIFTI.load(parcel_file)
-	px = Parcellation{Int}(hem, temp[L]) # just use left hem for demo
-	@test length(keys(px)) == 185
-	@test density(px) ≈ 0.740613073987443
-	@test sum(unassigned(px)) == 8428
-	@test sum(nnz(px)) == length(px) - sum(unassigned(px)) == sum(union(px))
+	px = BilateralParcellation{Int}(c, temp)
+	pxL = HemisphericParcellation{Int}(c[L], temp[L])
+	pxR = HemisphericParcellation{Int}(c[R], temp[R])
+	@test vec(px) == vcat(vec(pxL), vec(pxR)) == pad(temp[LR][:], c)
+
+	@test length(keys(px[L])) == 185
+	@test density(px[L]) ≈ 0.740613073987443
+	@test sum(unassigned(px[L])) == 8428
+	@test sum(nnz(px[L])) == length(px[L]) - sum(unassigned(px[L])) == sum(union(px[L]))
 end
 

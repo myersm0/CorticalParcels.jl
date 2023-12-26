@@ -31,13 +31,13 @@ overlap(p1::Parcel, p2::Parcel) = p1.membership' * p2.membership
 
 overlap(p::Parcel, x::Union{Vector{Bool}, BitVector}) = p.membership' * x
 
-overlap(p::Parcel, px::Parcellation) = return sum([overlap(p, px[k]) for k in keys(px)])
+overlap(p::Parcel, px::HemisphericParcellation) = sum([overlap(p, px[k]) for k in keys(px)])
 
-overlap(px::Parcellation, p::Parcel) = return overlap(p, px)
+overlap(px::HemisphericParcellation, p::Parcel) = overlap(p, px)
 
 overlap(x::Union{Vector{Bool}, BitVector}, p::Parcel) = overlap(p, x)
 
-function overlap(px::Parcellation)
+function overlap(px::HemisphericParcellation)
 	counts = zeros(Int, length(px))
 	for k in keys(px)
 		counts .+= px[k].membership

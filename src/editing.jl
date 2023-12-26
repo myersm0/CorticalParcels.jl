@@ -6,7 +6,7 @@ Base.setindex!(p::Parcel, args...) = setindex!(p.membership, args...)
 
 Base.dotview(p::Parcel, args...) = view(p.membership, args...)
 
-function Base.setindex!(px::Parcellation{T}, p::Parcel, k::T) where T
+function Base.setindex!(px::HemisphericParcellation{T}, p::Parcel, k::T) where T
 	p.surface == px.surface || error("Surface incompatibility")
 	px.parcels[k] = p
 end
@@ -69,7 +69,7 @@ clear!(p::Parcel) = p.membership .*= false
 
 Delete `Parcel` with ID `k` from a `Parcellation`
 """
-Base.delete!(px::Parcellation{T}, k::T) where T = delete!(px.parcels, k)
+Base.delete!(px::HemisphericParcellation{T}, k::T) where T = delete!(px.parcels, k)
 
 """
     append!(p, v)
@@ -105,7 +105,7 @@ end
 Given a `Parcellation{T}` and two keys of type `T`, merge the two `Parcel`s denoted
 by those keys and delete the latter one from the dictionary
 """
-function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) where T
+function Base.merge!(px::HemisphericParcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) where T
 	p1 = px[k1]
 	p2 = px[k2]
 	merge!(p1, p2, A)
@@ -113,7 +113,7 @@ function Base.merge!(px::Parcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) wher
 	return size(p1)
 end
 
-function Base.merge!(px::Parcellation{T}, k1::T, k2::T) where T
+function Base.merge!(px::HemisphericParcellation{T}, k1::T, k2::T) where T
 	haskey(px.surface, :A) || error("Operation requires adjacency matrix `A`")
 	return merge!(px, k1, k2, px.surface[:A])
 end
@@ -132,8 +132,8 @@ end
 
 Make a new `Parcellation` containing a `deepcopy` of all parcels from `px`. Note however that, as with `deepcopy(p::Parcel)`, the surface remains just a reference and is not itself copied, since it may be a large object.
 """
-function Base.deepcopy(px::Parcellation{T}) where T
-	px′ = Parcellation{T}(px.surface)
+function Base.deepcopy(px::HemisphericParcellation{T}) where T
+	px′ = HemisphericParcellation{T}(px.surface)
 	for k in keys(px)
 		px′[k] = deepcopy(px[k])
 	end

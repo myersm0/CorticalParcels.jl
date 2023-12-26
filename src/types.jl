@@ -1,13 +1,20 @@
 
-export Parcel, Parcellation
+export Parcel, HemisphericParcellation, BilateralParcellation
 
-struct Parcel{T <: Hemisphere}
-	surface::T
+struct Parcel
+	surface::Hemisphere
 	membership::BitVector
 end
 
-struct Parcellation{T}
-	surface::SurfaceSpace
+abstract type AbstractParcellation end
+
+struct HemisphericParcellation{T} <: AbstractParcellation
+	surface::Hemisphere
 	parcels::Dict{T, Parcel}
+end
+
+struct BilateralParcellation{T} <: AbstractParcellation
+	surface::CorticalSurface
+	parcels::Dict{BrainStructure, HemisphericParcellation{T}}
 end
 

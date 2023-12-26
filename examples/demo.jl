@@ -5,20 +5,27 @@ using CIFTI
 using JLD
 
 # first we need to set up a surface to use (refer to CorticalSurfaces.jl for details);
-# here we'll just do one hemisphere, the left
 data_dir = joinpath(dirname(@__FILE__), "..", "data")
 surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
-coords = temp["pointsets"]["midthickness"][L]
-mw = temp["medial wall"][L]
-triangle = temp["triangle"][L] # required for adjacency calculations below
-hem = Hemisphere(coords, mw; triangles = triangle) 
-hem[:neighbors] = make_adjacency_list(hem)
-hem[:A] = make_adjacency_matrix(hem)
+hems = Dict()
+for hem in LR
+	coords = temp["pointsets"]["midthickness"][hem]
+	mw = temp["medial wall"][hem]
+	triangles = temp["triangle"][hem] # required for adjacency calculations below
+	hems[hem] = Hemisphere(coords, mw; triangles = triangles) 
+	hems[hem][:neighbors] = make_adjacency_list(hems[hem])
+	hems[hem][:A] = make_adjacency_matrix(hems[hem])
+end
 
-# note that the two adjacency items created above are required for many parcelwise ops
-# (particularly ones that require graph traversal such as erode!() and dilate!()),
-# though you could still do some things without them
+c = CorticalSurface(hems[L], hems[R])
+
+# note that the two adjacency items created above, :A and :neighbors,  are required 
+# for many parcelwise ops (particularly ones that require graph traversal such 
+# as erode!() and dilate!()), though you could still do some things without them
+
+# for how we'll just deal with one hemisphere, the left one:
+hem = c[L]
 
 # given the vertex space defined in the left Hemisphere struct above,
 # now make a "parcel" within that space consisting of just a single vertex, 17344
@@ -67,13 +74,13 @@ end
 @assert complement(p1, p2) == size(p1)
 @assert complement(p2, p1) == size(p2)
 
-# but there's only a thin margin or interstice, 4 vertices long, between them:
+# but there's only a thin margin or interstice, 3 vertices long, between them:
 margin_vertices = findall(interstices(p1, p2))
-@assert length(margin_vertices) == 4
+@assert length(margin_vertices) == 3
 
 # now make an empty parcellation within the space of our left Hemisphere struct,
 # using keys (parcel IDs) of type Int:
-px = Parcellation{Int}(hem)
+px = HemisphericParcellation{Int}(hem)
 
 # give it *copies* of the two parcels we were working with above
 px[1] = Parcel(p1)
@@ -114,22 +121,31 @@ orig_parcels = cut(p3)
 
 # load in a real parcellation form a CIFTI file:
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
-temp = CIFTI.load(parcel_file)
-px = Parcellation{Int}(hem, temp[L]) # just use left hem for demo
+cifti_data = CIFTI.load(parcel_file)
+px = BilateralParcellation{Int}(c, cifti_data)
 
-# every time you show px, it will display properties of a few random parcels
-px
-px
-px
+# as long as there are no overlapping parcels, you can use vec() on an
+# AbstractParcellation{T} to recover a simple Vector{T} that matches the original vector
+# from which it was constructed (except for the fact that the parcellation will
+# include medial wall vertices; so for comparison we pad the original cifti data
+# to account for that):
+@assert vec(px) == pad(vec(cifti_data[LR]), c)
+
+# A BilateralParcellation is composed of a left and a right HemisphericParcellation;
+# you can access them like px[L] and px[R]. Every time you show px, it will display 
+# properties of a few random parcels
+px[L]
+px[L]
+px[L]
 
 # some miscellaneous functions:
-keys(px)       # get the parcel IDs (of type T) from Parcellation{T} px
-vec(px)        # turn a Parcellation{T} into a Vector{T}
-unassigned(px) # get a BitVector representing the unassigned vertices in px
-union(px)      # collapse all Parcels within px to a single BitVector
-nnz(px)        # the number of vertices in px that have parcel membership
-length(px)     # the length of px's vector space representation
-density(px)    # proportion of assigned verices: nnz(px) / length(px)
+keys(px[L])       # get the parcel IDs (of type T) from HemisphericParcellation{T} px
+vec(px[L])        # turn a HemisphericParcellation{T} into a Vector{T}
+unassigned(px[L]) # get a BitVector representing the unassigned vertices in px
+union(px[L])      # collapse all Parcels within px to a single BitVector
+nnz(px[L])        # the number of vertices in px that have parcel membership
+length(px[L])     # the length of px's vector space representation
+density(px[L])    # proportion of assigned verices: nnz(px) / length(px)
 
 
 
