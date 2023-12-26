@@ -127,3 +127,15 @@ function HemisphericParcellation{T}(surface::Hemisphere) where T
 	return HemisphericParcellation{T}(surface, Dict{T, Parcel}())
 end
 
+function BilateralParcellation{T}(surface::CorticalSurface, cifti::CiftiStruct) where T
+	size(cifti)[2] == 1 || error("Expected single-column CIFTI file")
+	px = Dict(
+		hem => HemisphericParcellation{T}(surface[hem], cifti[hem])
+		for hem in LR
+	)
+	length(intersect(keys(px[L]), keys(px[R]))) == 0 ||
+		error("Found parcels with membership spanning hemispheres; this is not supported")
+	return BilateralParcellation{T}(c, px)
+end
+
+
