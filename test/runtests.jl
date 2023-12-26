@@ -8,12 +8,18 @@ using CIFTI
 data_dir = joinpath(dirname(@__FILE__), "..", "data")
 surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
-coords = temp["pointsets"]["midthickness"][L]
-mw = temp["medial wall"][L]
-triangle = temp["triangle"][L] # required for adjacency calculations below
-hem = Hemisphere(coords, mw; triangles = triangle)
-hem[:neighbors] = make_adjacency_list(hem)
-hem[:A] = make_adjacency_matrix(hem)
+hems = Dict()
+for hem in LR
+	coords = temp["pointsets"]["midthickness"][hem]
+	mw = temp["medial wall"][hem]
+	triangles = temp["triangle"][hem] # required for adjacency calculations below
+	hems[hem] = Hemisphere(coords, mw; triangles = triangles)
+	hems[hem][:neighbors] = make_adjacency_list(hems[hem])
+	hems[hem][:A] = make_adjacency_matrix(hems[hem])
+end
+
+c = CorticalSurface(hems[L], hems[R])
+hem = c[L] # for most of these tests below we'll just deal with left hem for now
 
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 cifti_data = CIFTI.load(parcel_file)
@@ -119,10 +125,14 @@ end
 	# load in a real parcellation form a CIFTI file:
 	parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 	temp = CIFTI.load(parcel_file)
-	px = HemisphericParcellation{Int}(hem, temp[L]) # just use left hem for demo
-	@test length(keys(px)) == 185
-	@test density(px) ≈ 0.740613073987443
-	@test sum(unassigned(px)) == 8428
-	@test sum(nnz(px)) == length(px) - sum(unassigned(px)) == sum(union(px))
+	px = BilateralParcellation{Int}(c, temp)
+	pxL = HemisphericParcellation{Int}(c[L], temp[L])
+	pxR = HemisphericParcellation{Int}(c[R], temp[R])
+	@test vec(px) == vcat(vec(pxL), vec(pxR)) == pad(temp[LR][:], c)
+
+	@test length(keys(px[L])) == 185
+	@test density(px[L]) ≈ 0.740613073987443
+	@test sum(unassigned(px[L])) == 8428
+	@test sum(nnz(px[L])) == length(px[L]) - sum(unassigned(px[L])) == sum(union(px[L]))
 end
 
