@@ -135,7 +135,7 @@ function BilateralParcellation{T}(surface::CorticalSurface, cifti::CiftiStruct) 
 	)
 	length(intersect(keys(px[L]), keys(px[R]))) == 0 ||
 		error("Found parcels with membership spanning hemispheres; this is not supported")
-	return BilateralParcellation{T}(c, px)
+	return BilateralParcellation{T}(surface, px)
 end
 
 
