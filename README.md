@@ -3,14 +3,18 @@ This Julia package supplies a set of tools for conveniently and efficiently work
 
 A `Parcel` is a discrete region of interest on the cortical surface, and in this implementation is stored internally as a `BitVector` of vertices where each element denotes membership (`true` or `false`). The total length of that vector constitutes the surface-space representation in which the parcel is defined. The size of a parcel `size(p::Parcel)` is given as the number of non-zero elements of that vector, i.e. the number of vertices belonging to that parcel. This implementation was chosen to enable very fast performance of common operations such as getting the size, computing overlap with other parcels, dilating and eroding, etc, by reducing them internally to simple bitwise operations.
 
-A `Parcellation` is a collection of `Parcel`s that all share the same space. It's typically the case that the parcels within it are non-overlapping. The struct contains two fields:
-- `surface`: a `SurfaceSpace` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
+A parcellation is a collection of `Parcel`s that all share the same space. It's typically the case that the parcels within it are non-overlapping, but nothing in this implementation enforces that. 
+
+As for version 0.7, the former Parcellation type has been replaced by `HemisphericParcellation`, which is functionally equivalent but only clarifies the fact that it's to handle just a single hemisphere, either left or right. This is to distinguish it from the new `BilateralParcellation` struct, which provides the capability of dealing with both hemispheres at the same time. Currently `BilateralParcellation` is available only as a convenient container and constructor for its left and right component `HemisphericParcellation`s; it has little functionality beyond that *yet*, so for the moment you can use it to store the hemispheres and then loop over the hemispheres in order to do some work on each of them individually.
+
+The `HemisphericParcellation` struct contains two fields:
+- `surface`: a `Hemisphere` supplying details of the geometry (particularly, the size of the space) that all its component `Parcel`s must conform to
   - (if however the geometry is not of interest in your application, then a dummy surface can be created by, for example, `Hemisphere(32492)` where the only piece of information that's strictly required is the number of vertices, 32492 in this case)
 - `parcels`: a `Dict{T, Parcel}` mapping keys of type `T` to parcels, where `T` can be any type (preferably one for which a `zero(::T)` method is defined) that you want to use as keys for accessing and labeling individual parcels
 
-Rather than having to create the `Dict{T, Parcel}` yourself, I anticipate that a `Parcellation` will most often be initialized via its `Parcellation(surface::SurfaceSpace, x::Vector{T})` constructor, since the `Vector{T}` representation is probably the way you read in an existing parcellation from disk, e.g. from a [CIFTI](https://github.com/myersm0/CIFTI.jl") file. See the Usage section below.
+Rather than having to create the parcel dictionaries yourself, I anticipate that a parcellation will most often be initialized via its `BilateralParcellation(surface::SurfaceSpace, x::Vector{T})` constructor, since the `Vector{T}` representation is probably the way you read in an existing parcellation from disk, e.g. from a [CIFTI](https://github.com/myersm0/CIFTI.jl") file. See the Usage section below.
 
-A `Parcellation` can be mapped back to a vanilla `Vector{T}` representation if desired via `vec(px::Parcellation)`.
+A parcellation (either hemispheric or bilateral) can be mapped back to a vanilla `Vector{T}` representation if desired via `vec(px::AbstractParcellation)`.
 
 Some notation notes: in the following documentation and in demos, `p`, `p1`, `p2` will refer to individual parcels; and `px` will refer to a whole parcellation.
 
@@ -56,22 +60,20 @@ Parcel(hem)                  # create an empty parcel within the same space as `
 Parcel(hem, [5, 6, 7])       # create a parcel with 3 vertices within the same space as `hem`
 ```
 
-A `Parcellation` can be initialized in several ways, such as:
+A `HemisphericParcellation` can be initialized in several ways, such as:
 ```
-hem = Hemisphere(32492) # create a Hemisphere of 39492 vertices that will define the space
-Parcellation{Int}(hem)  # create an empty parcellation within that space
+hem = Hemisphere(32492)            # create a Hemisphere of 39492 vertices
+HemisphericParcellation{Int}(hem)  # create an empty parcellation within that space
 
 # as above, but this time fill the space with 10 randomly assigned parcels
-Parcellation{Int}(hem, rand(1:10, 32492))
+HemisphericParcellation{Int}(hem, rand(1:10, 32492))
 ```
 
 The above examples use `Int` as the initialization parameter, and this defines the type of key that will be assigned to each parcel. Any type should be usable, however, provided that its `typemax` can represent the largest value you anticipate needing to store. You could use `String` keys, for example, if you want to provide descriptive labels for your parcels and index them in that way.
 
 ### Accessors
-`unassigned(px::Parcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
+`unassigned(px::HemisphericParcellation)` may be used to dynamically determine the elements in the vector space that are not assigned to any parcel.
 
-`vec(px::Parcellation)` will reduce the parcellation to a single `Vector{T}`. If you constructed `px` from a `Vector{T}` (and have not changed any of its elements), this operation should return that same vector.
-
-More details and a demo coming soon.
+`vec(px::AbstractParcellation)` will reduce the parcellation to a single `Vector{T}`. If you constructed `px` from a `Vector{T}` (and have not changed any of its elements), this operation should return that same vector.
 
 [![Build Status](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/myersm0/CorticalParcels.jl/actions/workflows/CI.yml?query=branch%3Amain)
