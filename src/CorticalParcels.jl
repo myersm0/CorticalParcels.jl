@@ -28,7 +28,7 @@ export overlap, complement
 
 include("morphology.jl")
 export dilate!, erode!, close!, resize!
-export dilate, erode, interstices
+export dilate, erode, interstices, borders
 
 include("editing.jl")
 export setindex!, cut, split, clear!, delete!, append!, merge!, deepcopy
