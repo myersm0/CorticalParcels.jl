@@ -167,4 +167,21 @@ end
 
 interstices(px::HemisphericParcellation) = interstices(px, px.surface[:A])
 
+function borders(p::Parcel, neighbors::AdjacencyList)
+	verts = vertices(p)
+	counts = [sum(map(!in(verts), n)) for n in neigh[verts]]
+	out = falses(length(p1))
+	out[verts[counts .> 0]] .= true
+	return out
+end
+
+"""
+	 borders(p)
+
+Get a `BitVector` of the just the vertices of `Parcel p` that lie on its outermost edge.
+"""
+function borders(p::Parcel)
+	return borders(p, p.surface[:neighbors])
+end
+
 
