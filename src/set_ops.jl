@@ -20,9 +20,9 @@ Base.union!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership[x] .= tru
 Base.setdiff!(p::Parcel, x::Vector{T}) where T <: Integer = p.membership[x] .= false
 
 """
-    overlap(p1::Parcel, p2::Parcel)
+    overlap(p1, p2)
 
-Compute the number of member vertices shared between two `Parcel`s `p1`, `p2`
+Compute the number of member vertices shared between two `Parcel`s `p1`, `p2`.
 """
 overlap(p1::Parcel, p2::Parcel) = p1.membership' * p2.membership
 
@@ -44,9 +44,9 @@ function overlap(px::HemisphericParcellation)
 end
 
 """
-    complement(p1::Parcel, p2::Parcel)
+    complement(p1, p2)
 
-Compute the number of member vertices in `Parcel` `p1` not shared by those of `p2`
+Compute the number of member vertices in `Parcel` `p1` not shared by those of `p2`.
 """
 complement(p1::Parcel, p2::Parcel) = p1.membership' * .!p2.membership
 

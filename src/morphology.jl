@@ -3,7 +3,7 @@
     dilate!(p, A; limit = nothing)
 
 Perform a single pass of dilation on `Parcel` `p`, guided by adjacency matrix `A`;
-optionally specify a `limit::Int` on the number of new vertices that can be added
+optionally specify a `limit::Int` on the number of new vertices that can be added.
 """
 function dilate!(
 		p::Parcel, A::AdjacencyMatrix; limit::Union{Nothing, Int} = nothing
@@ -32,7 +32,7 @@ end
     erode!(p, neighbors; limit = nothing)
 
 Perform a single pass of erosion on `Parcel` `p`, guided by adjacency list `neighbors`;
-optionally specify a `limit::Int` on the number of vertices that you want to remove
+optionally specify a `limit::Int` on the number of vertices that you want to remove.
 """
 function erode!(
 		p::Parcel, neighbors::AdjacencyList; limit::Union{Nothing, Int} = nothing
@@ -63,7 +63,7 @@ end
 Given a `Parcel` `p` and an adjacency list `neighbors`, perform a morphological
 closing to fill in gaps, if any, by finding vertices in `p` where all of its 
 neighbors but one belong to `p`. Note: for performance reasons, this may not be
-technically quite the same as a true closing operation, `erode!(dilate!(p))`
+technically quite the same as a true closing operation, `erode!(dilate!(p))`.
 """
 function close!(p::Parcel, neighbors::AdjacencyList)
 	candidates = union([neighbors[v] for v in vertices(p)]...)
@@ -81,7 +81,7 @@ close!(p::Parcel) = close!(p, p.surface[:neighbors])
 	 resize!(p, desired_size, A, neighbors)
 
 Resize a `Parcel` `p`, guided by an adjacency matrix and an adjacency list, 
-by repeated dilation or erosion until `p` reaches `desired_size`
+by repeated dilation or erosion until `p` reaches `desired_size`.
 """
 function Base.resize!(
 		p::Parcel, desired_size::Int, A::AdjacencyMatrix, neighbors::AdjacencyList
@@ -108,7 +108,7 @@ end
 """
 	 resize!(p, desired_size)
 
-Resize a `Parcel` `p`, using adjacency information from its `surface` field
+Resize a `Parcel` `p`, using adjacency information from its `surface` field.
 """
 Base.resize!(p::Parcel, desired_size::Int) =
 	resize!(p, desired_size, p.surface[:A], p.surface[:neighbors])
@@ -116,7 +116,7 @@ Base.resize!(p::Parcel, desired_size::Int) =
 """
     interstices(p1, p2, A)
 
-Find the vertices lying in the boundaries between two `Parcel`s
+Find the vertices lying in the boundaries between two `Parcel`s.
 """
 
 function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)::BitVector
@@ -133,8 +133,8 @@ interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p1.surface[:A])
 """
     interstices(px, A)
 
-Iterate through a `Parcellation` and find, for each pair of neighboring `Parcel`s 
-separated by a 1-vertex-wide gap, the vertices in that interstitial region
+Iterate through a parcellation and find, for each pair of neighboring `Parcel`s 
+separated by a 1-vertex-wide gap, the vertices in that interstitial region.
 """
 function interstices(px::HemisphericParcellation{T}, A::AdjacencyMatrix) where T
 	v = vec(px)

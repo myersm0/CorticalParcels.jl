@@ -23,7 +23,7 @@ end
     cut(p, A)
 
 Cut articulation point(s), if any, from a graph representation of a `Parcel`, and return
-a new set of `Parcel`s: one for each connected component remaining after the vertex cut
+a new set of `Parcel`s: one for each connected component remaining after the vertex cut.
 """
 function cut(p::Parcel, A::AdjacencyMatrix)
 	g = Graphs.Graph(p, A)
@@ -45,7 +45,7 @@ end
 	 split(p, v)
 
 Remove vertices `v` from a graph representation of a `Parcel`, and return
-a new set of `Parcel`s: one for each connected component remaining
+a new set of `Parcel`s: one for each connected component remaining.
 """
 function Base.split(p::Parcel, v::Vector{Int})
 	haskey(p.surface, :A) || error("Operation requires adjacency matrix `:A`")
@@ -59,21 +59,21 @@ end
 """
     clear!(p)
 
-Zero-out all membership vertices of a `Parcel`
+Zero-out all membership vertices of a `Parcel`.
 """
 clear!(p::Parcel) = p.membership .*= false
 
 """
     delete!(px, k)
 
-Delete `Parcel` with ID `k` from a `Parcellation`
+Delete `Parcel` with ID `k` from a `Parcellation`.
 """
 Base.delete!(px::HemisphericParcellation{T}, k::T) where T = delete!(px.parcels, k)
 
 """
     append!(p, v)
 
-Add vertex `v::Int` to the `p`'s membership vector
+Add vertex `v::Int` to the `p`'s membership vector.
 """
 Base.append!(p::Parcel, v::Int) = p.membership[v] = true
 Base.append!(p::Parcel, v::Vector{Int}) = p.membership[v] .= true
@@ -81,7 +81,7 @@ Base.append!(p::Parcel, v::Vector{Int}) = p.membership[v] .= true
 """
     merge!(p1, p2, A)
 
-Merge two `Parcel`s by moving the member vertices of `p2` to `p1`
+Merge two `Parcel`s by moving the member vertices of `p2` to `p1`.
 """
 function Base.merge!(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)
 	i = interstices(p1, p2, A)
@@ -102,7 +102,7 @@ end
     merge!(px, k1, k2, A)
 
 Given a `Parcellation{T}` and two keys of type `T`, merge the two `Parcel`s denoted
-by those keys and delete the latter one from the dictionary
+by those keys and delete the latter one from the dictionary.
 """
 function Base.merge!(px::HemisphericParcellation{T}, k1::T, k2::T, A::AdjacencyMatrix) where T
 	p1 = px[k1]
@@ -118,18 +118,22 @@ function Base.merge!(px::HemisphericParcellation{T}, k1::T, k2::T) where T
 end
 
 """
-    deepcopy(p::Parcel)
+    deepcopy(p)
 
-Make a new `Parcel` containing a `deepcopy` of original parcel `p`'s `membership` vector. Note however that the surface remains just a reference and is not itself copied, since it may be a large object.
+Make a new `Parcel` containing a `deepcopy` of original parcel `p`'s `membership` 
+vector. Note however that the surface remains just a reference and is not itself 
+copied, since it may be a large object.
 """
 function Base.deepcopy(p::Parcel)
 	return Parcel(p)
 end
 
 """
-    deepcopy(px::Parcellation)
+    deepcopy(px)
 
-Make a new `Parcellation` containing a `deepcopy` of all parcels from `px`. Note however that, as with `deepcopy(p::Parcel)`, the surface remains just a reference and is not itself copied, since it may be a large object.
+Make a new parcellation containing a `deepcopy` of all parcels from `px`. Note however
+that, as with `deepcopy(p::Parcel)`, the surface remains just a reference and is not 
+itself copied, since it may be a large object.
 """
 function Base.deepcopy(px::HemisphericParcellation{T}) where T
 	px′ = HemisphericParcellation{T}(px.surface)
