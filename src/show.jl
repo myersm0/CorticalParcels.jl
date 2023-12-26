@@ -36,7 +36,7 @@ end
 function Base.show(io::IO, mime::MIME"text/plain", px::BilateralParcellation)
 	println("CORTEX_LEFT:")
 	show(io, mime, px[L])
-	println("CORTEX_RIGHT:")
+	println("\nCORTEX_RIGHT:")
 	show(io, mime, px[R])
 end
 
