@@ -170,7 +170,7 @@ interstices(px::HemisphericParcellation) = interstices(px, px.surface[:A])
 function borders(p::Parcel, neighbors::AdjacencyList)
 	verts = vertices(p)
 	counts = [sum(map(!in(verts), n)) for n in neighbors[verts]]
-	out = falses(length(p1))
+	out = falses(length(p))
 	out[verts[counts .> 0]] .= true
 	return out
 end
