@@ -82,6 +82,9 @@ end
 	end
 	@test size(p1′) == size(p1) + sum(limits)
 
+	border_verts = borders(p1)
+	@test findall(border_verts) == [17259, 17260, 17261, 17301, 17304, 17342, 17346, 17383, 17386, 17423, 17424, 17425]
+
 	while sum(interstices(p1, p2)) == 0
 		dilate!(p2)
 	end
