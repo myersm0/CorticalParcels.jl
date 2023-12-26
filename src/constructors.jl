@@ -68,7 +68,7 @@ function BilateralParcellation{T}(surface::CorticalSurface, x::AbstractVector) w
 		verts = vertices(surface[hem], Bilateral(), Inclusive())
 		parcels[hem] = HemisphericParcellation{T}(surface[hem], x[verts])
 	end
-	length(instersect(keys(parcels[L]), keys(parcels[R]))) == 0 ||
+	length(intersect(keys(parcels[L]), keys(parcels[R]))) == 0 ||
 		error("Found parcels with membership spanning hemispheres; this is not supported")
 	return BilateralParcellation{T}(surface, parcels)
 end
