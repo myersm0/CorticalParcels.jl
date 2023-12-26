@@ -1,7 +1,4 @@
 
-export intersect, union, setdiff, intersect!, union!, setdiff!
-export overlap, complement
-
 Base.intersect(p1::Parcel, p2::Parcel) = p1.membership .& p2.membership
 Base.union(p1::Parcel, p2::Parcel) = p1.membership .| p2.membership
 Base.setdiff(p1::Parcel, p2::Parcel) = p1.membership .& .!p2.membership

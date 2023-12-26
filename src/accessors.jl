@@ -1,7 +1,5 @@
 
 import CorticalSurfaces: vertices
-export vertices, size, length, keys, haskey, values, getindex
-export vec, union, unassigned, nnz, density
 
 # ===== Parcel functions =====
 

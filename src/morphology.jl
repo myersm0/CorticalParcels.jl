@@ -1,7 +1,4 @@
 
-export dilate!, erode!, close!, resize!
-export dilate, erode, interstices
-
 """
     dilate!(p, A; limit = nothing)
 

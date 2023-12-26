@@ -1,6 +1,4 @@
 
-export DistanceMethod, CentroidToCentroid, ClosestVertices, centroid, distance
-
 abstract type DistanceMethod end
 struct CentroidToCentroid <: DistanceMethod end
 struct ClosestVertices <: DistanceMethod end
