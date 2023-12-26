@@ -126,8 +126,10 @@ px = BilateralParcellation{Int}(c, cifti_data)
 
 # as long as there are no overlapping parcels, you can use vec() on an
 # AbstractParcellation{T} to recover a simple Vector{T} that matches the original vector
-# from which it was constructed:
-@assert vec(px) == vec(cifti_data[LR])
+# from which it was constructed (except for the fact that the parcellation will
+# include medial wall vertices; so for comparison we pad the original cifti data
+# to account for that):
+@assert vec(px) == pad(vec(cifti_data[LR]), c)
 
 # A BilateralParcellation is composed of a left and a right HemisphericParcellation;
 # you can access them like px[L] and px[R]. Every time you show px, it will display 
