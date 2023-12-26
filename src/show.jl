@@ -33,10 +33,23 @@ function Base.show(io::IO, mime::MIME"text/plain", px::HemisphericParcellation)
 	end
 end
 
+function Base.show(io::IO, mime::MIME"text/plain", px::BilateralParcellation)
+	println("CORTEX_LEFT:")
+	show(io, mime, px[L])
+	println("CORTEX_RIGHT:")
+	show(io, mime, px[R])
+end
+
 function Base.show(
 		io::IO, mime::MIME"text/plain", pxs::Vector{HemisphericParcellation{T}}
 	) where T
-	print(io, "Vector of $(length(pxs)) HemisphericParcellations with keys of type $T")
+	print(io, "Vector of $(length(pxs)) HemisphericParcellation with keys of type $T")
+end
+
+function Base.show(
+		io::IO, mime::MIME"text/plain", pxs::Vector{BilateralParcellation{T}}
+	) where T
+	print(io, "Vector of $(length(pxs)) BilateralParcellation with keys of type $T")
 end
 
 
