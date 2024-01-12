@@ -166,13 +166,16 @@ to at least one `Parcel`.
 """
 nnz(px::HemisphericParcellation) = sum(union(px))
 
+nnz(px::BilateralParcellation) = nnz(px[L]) + nnz(px[R])
+
 """
     density(px)
 
 Get the proportion of assigned parcel vertices of a parcellation
 relative to the total number of vertices in its surface representation.
 """
-density(px::HemisphericParcellation) = nnz(px) / length(px)
+density(px::AbstractParcellation) = nnz(px) / length(px)
+
 
 function Base.:(==)(px1::HemisphericParcellation, px2::HemisphericParcellation)
 	px1.surface == px2.surface || return false
