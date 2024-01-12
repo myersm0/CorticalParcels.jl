@@ -158,6 +158,8 @@ Get a `BitVector` identifying unassigned vertices (`1`) in a parcellation.
 """
 unassigned(px::HemisphericParcellation) = .!union(px)
 
+unassigned(px::BilateralParcellation) = vcat(unassigned(px[L]), unassigned(px[R]))
+
 """
     nnz(px)
 
@@ -176,10 +178,14 @@ relative to the total number of vertices in its surface representation.
 """
 density(px::AbstractParcellation) = nnz(px) / length(px)
 
-
 function Base.:(==)(px1::HemisphericParcellation, px2::HemisphericParcellation)
 	px1.surface == px2.surface || return false
 	all([haskey(px2, k) && px1[k] == px2[k] for k in keys(px1)]) || return false
 	return true
 end
+
+function Base.:(==)(px1::BilateralParcellation, px2::BilateralParcellation)
+	return px1[L] == px2[L] && px1[R] == px2[R]
+end
+
 
