@@ -86,7 +86,7 @@ Get the IDs of all `Parcel`s within a `Parcellation`.
 """
 Base.keys(px::HemisphericParcellation) = keys(px.parcels)
 
-# TODO: keys(::BilateralParcellation)?
+Base.keys(px::BilateralParcellation) = union(keys(px[L]), keys(px[R]))
 
 """
 	 haskey(px, k)
@@ -94,6 +94,9 @@ Base.keys(px::HemisphericParcellation) = keys(px.parcels)
 Check whether `Parcellation{T} px` contains a parcel with key value `k`.
 """
 Base.haskey(px::HemisphericParcellation{T}, k::T) where T = haskey(px.parcels, k)
+
+Base.haskey(px::BilateralParcellation{T}, k::T) where T = 
+	haskey(px[L], k) || haskey(px[R], k)
 
 """
     values(px)
@@ -108,6 +111,9 @@ Base.values(px::HemisphericParcellation) = values(px.parcels)
 Access a single Parcel within a Parcellation via its key of type `T`".
 """
 Base.getindex(px::HemisphericParcellation{T}, k::T) where T = px.parcels[k]
+
+Base.getindex(px::BilateralParcellation{T}, k::T) where T = 
+	haskey(px[L], k) ? px[L][k] : px[R][k]
 
 Base.getindex(px::BilateralParcellation, b::BrainStructure) = px.parcels[b]
 

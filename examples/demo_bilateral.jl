@@ -121,7 +121,7 @@ orig_parcels = cut(p3)
 # load in a real parcellation form a CIFTI file:
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 temp = CIFTI.load(parcel_file)
-px = HemisphericParcellation{Int}(c[L], temp[L]) # just use left hem for demo
+px = Bilateral{Int}(c[L], temp[L]) # just use left hem for demo
 
 # every time you show px, it will display properties of a few random parcels
 px
