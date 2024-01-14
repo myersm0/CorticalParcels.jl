@@ -6,9 +6,12 @@ import CorticalSurfaces: vertices
 """
     vertices(p)
 
-Get the vertex indices belonging to a `Parcel`.
+Get the vertex indices belonging to a `Parcel`. Indices will be numbered
+inclusive of medial wall by default.
 """
-vertices(p::Parcel) = findall(p.membership)
+vertices(p::Parcel) = vertices(p, Inclusive())
+
+vertices(p::Parcel, ::Inclusive) = findall(p.membership)
 
 """
 	 vertices(p, Exclusive())
@@ -21,8 +24,22 @@ vertices(p::Parcel, ::Exclusive) = collapse(findall(p.membership), p.surface)
 """
 	 vertices(p, Bilateral(), Exclusive())
 
+Get the vertex indices belonging to a `Parcel`, inclusive of medial wall vertices,
+and make the indexing relative to the whole brain.
+"""
+function vertices(p::Parcel, ::Bilateral, ::Inclusive)
+	temp = vertices(p.surface, Bilateral(), Inclusive())
+	return temp[p.membership]
+end
+
+"""
+	 vertices(p, Bilateral(), Exclusive())
+
 Get the vertex indices belonging to a `Parcel` and adjust for exclusion 
 of medial wall vertices, and make the indexing relative to the whole brain.
+
+Note: In the event that a parcel has any member vertices overlapping with the
+medial wall, those vertices will be omitted from the output.
 """
 function vertices(p::Parcel, ::Bilateral, ::Exclusive)
 	temp = vertices(p.surface, Bilateral(), Inclusive())
