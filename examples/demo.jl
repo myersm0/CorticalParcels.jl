@@ -3,9 +3,10 @@ using CorticalSurfaces
 using CorticalParcels
 using CIFTI
 using JLD
+using Pkg.Artifacts
 
 # first we need to set up a surface to use (refer to CorticalSurfaces.jl for details);
-data_dir = joinpath(dirname(@__FILE__), "..", "data")
+data_dir = artifact"CIFTI_test_files"
 surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
 hems = Dict()
