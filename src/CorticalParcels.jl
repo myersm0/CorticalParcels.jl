@@ -5,7 +5,6 @@ using CIFTI
 using CorticalSurfaces
 using Chain
 using NearestNeighbors
-using HDF5
 using SparseArrays
 using StatsBase: sample
 using ThreadsX
