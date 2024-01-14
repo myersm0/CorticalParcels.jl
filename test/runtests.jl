@@ -4,8 +4,9 @@ using JLD
 using Test
 using Chain
 using CIFTI
+using Pkg.Artifacts
 
-data_dir = joinpath(dirname(@__FILE__), "..", "data")
+data_dir = artifact"CIFTI_test_files"
 surf_file = joinpath(data_dir, "MSC01.jld")
 temp = load(surf_file)
 hems = Dict()
