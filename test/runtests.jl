@@ -14,9 +14,9 @@ for hem in LR
 	coords = temp["pointsets"]["midthickness"][hem]
 	mw = temp["medial wall"][hem]
 	triangles = temp["triangle"][hem] # required for adjacency calculations below
-	hems[hem] = Hemisphere(coords, mw; triangles = triangles)
-	hems[hem][:neighbors] = make_adjacency_list(hems[hem])
-	hems[hem][:A] = make_adjacency_matrix(hems[hem])
+	hems[hem] = Hemisphere(hem, coords, mw; triangles = triangles)
+	make_adjacency_list!(hems[hem])
+	make_adjacency_matrix!(hems[hem])
 end
 
 c = CorticalSurface(hems[L], hems[R])
@@ -101,7 +101,7 @@ end
 	px[2] = deepcopy(p2)
 	@test size(px) == 2
 
-	@test_throws ErrorException px[2] = Parcel(Hemisphere(9999))
+	@test_throws ErrorException px[2] = Parcel(Hemisphere(L, 9999))
 
 	merge!(px, 1, 2)
 	@test size(px) == 1 # just one parcel remains now
