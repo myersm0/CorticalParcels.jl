@@ -78,6 +78,8 @@ Base.isequal(p1::Parcel, x::BitVector) =
 Base.:(==)(p1::Parcel, p2::Parcel) = isequal(p1, p2)
 Base.:(==)(p1::Parcel, x::BitVector) = isequal(p1, p2)
 
+CorticalSurfaces.brainstructure(p::Parcel) = brainstructure(p.surface)
+
 # ===== Parcellation functions =====
 
 """
