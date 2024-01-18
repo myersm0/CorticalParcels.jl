@@ -125,7 +125,7 @@ function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)::BitVector
 	setdiff!(p1′, p1)
 	setdiff!(p2′, p2)
 	temp = intersect(p1′, p2′)
-	return temp .& Iterators.flatten(sum(A[:, union(p1, p2)]; dims = 2) .> 2)
+	return membership(temp) .& Iterators.flatten(sum(A[:, membership(union(p1, p2))]; dims = 2) .> 2)
 end
 
 interstices(p1::Parcel, p2::Parcel) = interstices(p1, p2, p1.surface[:A])

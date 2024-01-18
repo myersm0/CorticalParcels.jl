@@ -4,6 +4,13 @@ import CorticalSurfaces: vertices
 # ===== Parcel functions =====
 
 """
+    membership(p)
+
+Get a `BitVector` denoting vertexwise parcel membership
+"""
+membership(p::Parcel) = p.membership
+
+"""
     vertices(p)
 
 Get the vertex indices belonging to a `Parcel`. Indices will be numbered
@@ -206,5 +213,6 @@ end
 function Base.:(==)(px1::BilateralParcellation, px2::BilateralParcellation)
 	return px1[L] == px2[L] && px1[R] == px2[R]
 end
+
 
 
