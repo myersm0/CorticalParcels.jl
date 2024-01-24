@@ -1,6 +1,5 @@
 - add fn to transform vertex list entries into (Inclusive()|Exclusive()) indices
 - add fn to handle square matrices of both hemispheres
-- add capability to generate bilateral px, e.g. Parcellation(c::CorticalSurface, cifti::CiftiStruct)
-- add haskey(::Parcellation{T}, ::T)
 - add a copy method for Parcellation
 - safer handling of edge cases, like merging a parcel with itself
+- provide length(p, Exclusive()) fn?
