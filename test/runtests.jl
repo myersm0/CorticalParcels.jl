@@ -15,11 +15,11 @@ for hem in LR
 	mw = temp["medial wall"][hem]
 	triangles = temp["triangle"][hem] # required for adjacency calculations below
 	hems[hem] = Hemisphere(hem, coords, mw; triangles = triangles)
-	make_adjacency_list!(hems[hem])
-	make_adjacency_matrix!(hems[hem])
 end
 
 c = CorticalSurface(hems[L], hems[R])
+initialize_adjacencies!(c)
+
 hem = c[L] # for most of these tests below we'll just deal with left hem for now
 
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
