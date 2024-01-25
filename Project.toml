@@ -16,7 +16,6 @@ ThreadsX = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
 [compat]
 CIFTI = "1"
 Chain = "0.5"
-CorticalSurfaces = "0.9.1"
 Graphs = "1.9"
 NearestNeighbors = "0.4.13"
 StatsBase = "0.34"
