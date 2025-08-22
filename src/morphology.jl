@@ -118,7 +118,6 @@ Base.resize!(p::Parcel, desired_size::Int) =
 
 Find the vertices lying in the boundaries between two `Parcel`s.
 """
-
 function interstices(p1::Parcel, p2::Parcel, A::AdjacencyMatrix)::BitVector
 	p1′ = dilate(p1, A)
 	p2′ = dilate(p2, A)
