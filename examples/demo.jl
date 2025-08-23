@@ -122,14 +122,17 @@ orig_parcels = cut(p3)
 # load in a real parcellation form a CIFTI file:
 parcel_file = joinpath(data_dir, "test_parcels.dtseries.nii")
 cifti_data = CIFTI.load(parcel_file)
-px = BilateralParcellation{Int}(c, cifti_data)
+px = BilateralParcellation{Float32}(c, cifti_data)
 
 # as long as there are no overlapping parcels, you can use vec() on an
 # AbstractParcellation{T} to recover a simple Vector{T} that matches the original vector
 # from which it was constructed (except for the fact that the parcellation will
 # include medial wall vertices; so for comparison we pad the original cifti data
 # to account for that):
-@assert vec(px) == pad(vec(cifti_data[LR]), c)
+a = vec(px)
+b = pad(vec(cifti_data[LR]), c)
+indices = findall(!isnan, b) # NaNs however will be represented differently, so we must skip them
+@assert a[indices] == b[indices]
 
 # A BilateralParcellation is composed of a left and a right HemisphericParcellation;
 # you can access them like px[L] and px[R]. Every time you show px, it will display 
