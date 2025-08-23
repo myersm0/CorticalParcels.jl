@@ -7,7 +7,6 @@ using Chain
 using NearestNeighbors
 using SparseArrays
 using StatsBase: sample
-using ThreadsX
 
 # import some type-aliasing constants for convenience
 import CorticalSurfaces: AdjacencyList, AdjacencyMatrix, DistanceMatrix
