@@ -141,10 +141,12 @@ function interstices(px::HemisphericParcellation{T}, A::AdjacencyMatrix) where T
 	temp = @view A[:, u]
 
 	# find all unassigned vertices that have 2 or more parcels as neighbors
-	status = filter(
-		x -> length(x) >= 2,
-		ThreadsX.map(x -> sort(setdiff(v[x], 0)), eachcol(temp))
-	)
+	results = Vector{Vector{eltype(v)}}(undef, size(temp, 2))
+	Threads.@threads :dynamic for i in 1:size(temp, 2)
+		 col = @view temp[:, i]
+		 results[i] = sort(setdiff(v[col], 0))
+	end
+	status = filter(x -> length(x) >= 2, results)
 
 	# from all unique parcel-parcel pairs discovered from the above,
 	# make a dict in which to store their interstitial vertices, if any
