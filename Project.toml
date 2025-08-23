@@ -5,7 +5,6 @@ version = "0.10.0"
 
 [deps]
 CIFTI = "8026ff91-9e86-4f19-bd27-c139e9e8bf7a"
-Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 CorticalSurfaces = "db9f6742-bc38-4697-955a-0a5dbec8c5c6"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
