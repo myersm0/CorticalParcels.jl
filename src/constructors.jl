@@ -42,7 +42,7 @@ end
 Create a new `Parcel` that's a copy of another one `p`.
 """
 function Parcel(p::Parcel)
-	Parcel(p.surface, vertices(p))
+	return Parcel(p.surface, vertices(p))
 end
 
 
@@ -101,7 +101,7 @@ Create a `BilateralParcellation` from a single-column `Matrix` `x`.
 """
 function BilateralParcellation{T}(surface::CorticalSurface, x::AbstractMatrix) where T
 	size(x, 2) == 1 || error("For matrix input, column dimension must be singleton")
-	BilateralParcellation{T}(surface, x[:])
+	return BilateralParcellation{T}(surface, x[:])
 end
 
 """
@@ -111,7 +111,7 @@ Create a `HemisphericParcellation` from a single-column `Matrix` `x`.
 """
 function HemisphericParcellation{T}(surface::Hemisphere, x::AbstractMatrix) where T
 	size(x, 2) == 1 || error("For matrix input, column dimension must be singleton")
-	HemisphericParcellation{T}(surface, x[:])
+	return HemisphericParcellation{T}(surface, x[:])
 end
 
 """

@@ -11,16 +11,13 @@ Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-ThreadsX = "ac1d9e8a-700a-412c-b207-f0111f4b6c0d"
 
 [compat]
-CIFTI = "1"
-Chain = "0.5"
-CorticalSurfaces = "0.9.2"
-Graphs = "1.9"
-NearestNeighbors = "0.4.13"
+CIFTI = "2"
+CorticalSurfaces = "0.10"
+Graphs = "1"
+NearestNeighbors = "0.4"
 StatsBase = "0.34"
-ThreadsX = "0.1.11"
 julia = "1.9"
 
 [extras]

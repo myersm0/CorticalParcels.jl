@@ -27,7 +27,7 @@ function distance(
 		p1::Parcel, p2::Parcel, distances::DistanceMatrix; 
 		method::DistanceMethod = CentroidToCentroid()
 	)
-	distance(method, p1, p2, distances)
+	return distance(method, p1, p2, distances)
 end
 
 """
@@ -38,7 +38,7 @@ Find the distance between `Parcel`s `p1` and `p2` using `method` (one of
 distance matrix `:distances` belonging to the first parcel's `SurfaceSpace` struct
 """
 function distance(p1::Parcel, p2::Parcel, method::DistanceMethod = CentroidToCentroid())
-	distance(method, p1, p2, p1.surface[:distances])
+	return distance(method, p1, p2, p1.surface[:distances])
 end
 
 function distance(
