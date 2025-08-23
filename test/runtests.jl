@@ -2,7 +2,6 @@ using CorticalParcels
 using CorticalSurfaces
 using JLD
 using Test
-using Chain
 using CIFTI
 using Pkg.Artifacts
 
