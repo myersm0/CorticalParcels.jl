@@ -13,7 +13,7 @@ function Base.show(
 end
 
 function Base.show(io::IO, mime::MIME"text/plain", px::HemisphericParcellation)
-	ks = @chain keys(px) collect sample(_, size(px); replace = false)
+	ks = sample(collect(keys(px)), size(px); replace = false)
 	dens = Int(round(density(px) * 100; digits = 0))
 	print(io, "HemisphericParcellation{$(eltype(keys(px)))} with $(size(px)) parcels,")
 	print(io, " $dens% dense,")

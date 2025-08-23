@@ -3,7 +3,6 @@ module CorticalParcels
 
 using CIFTI
 using CorticalSurfaces
-using Chain
 using NearestNeighbors
 using SparseArrays
 using StatsBase: sample
