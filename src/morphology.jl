@@ -98,7 +98,7 @@ function Base.resize!(
 		end
 		if nchanged == 0
 			siz = size(p)
-			println("Could not achieve size $desired_size; stopped at $siz")
+			warn("Could not achieve size $desired_size; stopped at $siz")
 			return siz
 		end
 	end
