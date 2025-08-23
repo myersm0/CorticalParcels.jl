@@ -15,8 +15,7 @@ for hem in LR
 	mw = temp["medial wall"][hem]
 	triangles = temp["triangle"][hem] # required for adjacency calculations below
 	hems[hem] = Hemisphere(hem, coords, mw; triangles = triangles) 
-	make_adjacency_list!(hems[hem])
-	make_adjacency_matrix!(hems[hem])
+	initialize_adjacencies!(hems[hem])
 end
 
 c = CorticalSurface(hems[L], hems[R])
