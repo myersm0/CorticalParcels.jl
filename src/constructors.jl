@@ -16,7 +16,7 @@ end
 
 Make a `Parcel`, given a `surface::Hemisphere` its vertex indices.
 """
-function Parcel(surface::Hemisphere, verts::Vector{Int})
+function Parcel(surface::Hemisphere, verts::AbstractVector{<:Union{Signed, Unsigned}})
 	membership = falses(size(surface))
 	membership[verts] .= true
 	return Parcel(surface, membership)
@@ -61,7 +61,7 @@ function BilateralParcellation{T}(surface::CorticalSurface, x::AbstractVector) w
 	input_size = length(x)
 	if input_size != nverts
 		input_size == size(surface, Exclusive()) || error(DimensionMismatch)
-		x = pad(x, surface; sentinel = 0)
+		x = pad(x, surface, 0)
 	end
 	parcels = Dict{BrainStructure, HemisphericParcellation{T}}()
 	for hem in LR
@@ -86,7 +86,7 @@ function HemisphericParcellation{T}(surface::Hemisphere, x::AbstractVector) wher
 	input_size = length(x)
 	if input_size != nverts
 		input_size == size(surface, Exclusive()) || error(DimensionMismatch)
-		x = pad(x, surface; sentinel = 0)
+		x = pad(x, surface, 0)
 	end
 	return HemisphericParcellation{T}(
 		surface,

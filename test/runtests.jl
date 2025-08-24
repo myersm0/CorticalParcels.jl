@@ -131,7 +131,7 @@ end
 	px = BilateralParcellation{Int}(c, temp)
 	pxL = HemisphericParcellation{Int}(c[L], temp[L])
 	pxR = HemisphericParcellation{Int}(c[R], temp[R])
-	@test vec(px) == vcat(vec(pxL), vec(pxR)) == pad(temp[LR][:], c; sentinel = 0)
+	@test vec(px) == vcat(vec(pxL), vec(pxR)) == pad(temp[LR][:], c, 0)
 
 	@test length(keys(px[L])) == 185
 	@test density(px[L]) ≈ 0.740613073987443

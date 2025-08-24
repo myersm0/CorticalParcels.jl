@@ -6,7 +6,7 @@ Perform a single pass of dilation on `Parcel` `p`, guided by adjacency matrix `A
 optionally specify a `limit::Int` on the number of new vertices that can be added.
 """
 function dilate!(
-		p::Parcel, A::AdjacencyMatrix; limit::Union{Nothing, Int} = nothing
+		p::Parcel, A::AdjacencyMatrix; limit::Union{Nothing, Number} = nothing
 	)
 	parcel_verts = vertices(p)
 	border_verts = setdiff(unique(A[:, parcel_verts].rowval), parcel_verts)
@@ -19,7 +19,7 @@ function dilate!(
 	return length(border_verts)
 end
 
-dilate!(p::Parcel; limit::Union{Nothing, Int} = nothing) =
+dilate!(p::Parcel; limit::Union{Nothing, Number} = nothing) =
 	dilate!(p, p.surface[:A]; limit = limit)
 
 function dilate(p::Parcel, args...)
@@ -35,7 +35,7 @@ Perform a single pass of erosion on `Parcel` `p`, guided by adjacency list `neig
 optionally specify a `limit::Int` on the number of vertices that you want to remove.
 """
 function erode!(
-		p::Parcel, neighbors::AdjacencyList; limit::Union{Nothing, Int} = nothing
+		p::Parcel, neighbors::AdjacencyList; limit::Union{Nothing, Number} = nothing
 	)
 	verts = vertices(p)
 	border_verts = verts[
@@ -48,7 +48,7 @@ function erode!(
 	return length(border_verts)
 end
 
-erode!(p::Parcel; limit::Union{Nothing, Int} = nothing) = 
+erode!(p::Parcel; limit::Union{Nothing, Number} = nothing) = 
 	erode!(p, p.surface[:neighbors]; limit = limit)
 
 function erode(p::Parcel, args...)
@@ -84,7 +84,7 @@ Resize a `Parcel` `p`, guided by an adjacency matrix and an adjacency list,
 by repeated dilation or erosion until `p` reaches `desired_size`.
 """
 function Base.resize!(
-		p::Parcel, desired_size::Int, A::AdjacencyMatrix, neighbors::AdjacencyList
+		p::Parcel, desired_size::Number, A::AdjacencyMatrix, neighbors::AdjacencyList
 	)
 	curr_size = size(p)
 	Δ = curr_size - desired_size
@@ -110,7 +110,7 @@ end
 
 Resize a `Parcel` `p`, using adjacency information from its `surface` field.
 """
-Base.resize!(p::Parcel, desired_size::Int) =
+Base.resize!(p::Parcel, desired_size::Number) =
 	resize!(p, desired_size, p.surface[:A], p.surface[:neighbors])
 
 """
