@@ -59,6 +59,8 @@ CorticalSurfaces.brainstructure(p::Parcel) = brainstructure(p.surface)
 
 Get the number of Parcels comprising a Parcellation.
 """
+function Base.size(px::AbstractParcellation) end
+
 Base.size(px::HemisphericParcellation) = length(px.parcels)
 
 Base.size(px::BilateralParcellation) = size(px[L]) + size(px[R])
@@ -75,6 +77,8 @@ Base.length(px::AbstractParcellation) = size(px.surface)
 
 Get the IDs of all `Parcel`s within a `Parcellation`.
 """
+function Base.keys(px::AbstractParcellation) end
+
 Base.keys(px::HemisphericParcellation) = keys(px.parcels)
 
 Base.keys(px::BilateralParcellation) = union(keys(px[L]), keys(px[R]))
@@ -84,6 +88,8 @@ Base.keys(px::BilateralParcellation) = union(keys(px[L]), keys(px[R]))
 
 Check whether `Parcellation{T} px` contains a parcel with key value `k`.
 """
+function Base.haskey(px::AbstractParcellation, k::T) where T end
+
 Base.haskey(px::HemisphericParcellation{T}, k::T) where T = haskey(px.parcels, k)
 
 Base.haskey(px::BilateralParcellation{T}, k::T) where T = 
@@ -101,6 +107,8 @@ Base.values(px::HemisphericParcellation) = values(px.parcels)
 
 Access a single Parcel within a Parcellation via its key of type `T`".
 """
+function Base.getindex(px::AbstractParcellation, k) end
+
 Base.getindex(px::HemisphericParcellation{T}, k::T) where T = px.parcels[k]
 
 Base.getindex(px::BilateralParcellation{T}, k::T) where T = 
@@ -147,6 +155,8 @@ end
 
 Get a `BitVector` identifying unassigned vertices (`1`) in a parcellation.
 """
+function unassigned(px::AbstractParcellation) end
+
 unassigned(px::HemisphericParcellation) = .!union(px)
 
 unassigned(px::BilateralParcellation) = vcat(unassigned(px[L]), unassigned(px[R]))
@@ -157,6 +167,8 @@ unassigned(px::BilateralParcellation) = vcat(unassigned(px[L]), unassigned(px[R]
 Get the number of vertices within a parcellation that are assigned
 to at least one `Parcel`.
 """
+function nnz(px::AbstractParcellation) end
+
 nnz(px::HemisphericParcellation) = sum(union(px))
 
 nnz(px::BilateralParcellation) = nnz(px[L]) + nnz(px[R])

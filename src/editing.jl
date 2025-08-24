@@ -47,7 +47,7 @@ end
 Remove vertices `v` from a graph representation of a `Parcel`, and return
 a new set of `Parcel`s: one for each connected component remaining.
 """
-function Base.split(p::Parcel, v::Vector{Int})
+function Base.split(p::Parcel, v::AbstractVector{Integer})
 	haskey(p.surface, :A) || error("Operation requires adjacency matrix `:A`")
 	g = Graphs.Graph(p, p.surface[:A])
 	Graphs.rem_vertices!(g, v)
@@ -75,8 +75,8 @@ Base.delete!(px::HemisphericParcellation{T}, k::T) where T = delete!(px.parcels,
 
 Add vertex `v::Int` to the `p`'s membership vector.
 """
-Base.append!(p::Parcel, v::Int) = p.membership[v] = true
-Base.append!(p::Parcel, v::Vector{Int}) = p.membership[v] .= true
+Base.append!(p::Parcel, v::Integer) = p.membership[v] = true
+Base.append!(p::Parcel, v::AbstractVector{Integer}) = p.membership[v] .= true
 
 """
     merge!(p1, p2, A)

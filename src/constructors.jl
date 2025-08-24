@@ -16,7 +16,7 @@ end
 
 Make a `Parcel`, given a `surface::Hemisphere` its vertex indices.
 """
-function Parcel(surface::Hemisphere, verts::Vector{Int})
+function Parcel(surface::Hemisphere, verts::AbstractVector{<:Union{Signed, Unsigned}})
 	membership = falses(size(surface))
 	membership[verts] .= true
 	return Parcel(surface, membership)
